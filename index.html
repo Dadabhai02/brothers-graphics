@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brothers Graphics</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: #0f0f0f;
+    color: #fff;
+    scroll-behavior: smooth;
+}
+
+/* Navbar */
+nav {
+    position: fixed;
+    width: 100%;
+    padding: 15px 40px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: flex-end;
+    z-index: 1000;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+/* Hero */
+.hero {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+/* LOGO STYLE */
+.hero img {
+    width: 180px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 10px #00ffcc;
+    }
+    to {
+        box-shadow: 0 0 30px #00ffcc;
+    }
+}
+
+.hero h1 {
+    font-size: 3rem;
+    color: #00ffcc;
+}
+
+.hero p {
+    margin-top: 10px;
+    color: #aaa;
+}
+
+/* Sections */
+section {
+    padding: 80px 40px;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #00ffcc;
+}
+
+/* Services */
+.services {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.card {
+    background: #1a1a1a;
+    padding: 20px;
+    width: 250px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    background: #00ffcc20;
+}
+
+/* Gallery */
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.gallery img {
+    width: 100%;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.gallery img:hover {
+    transform: scale(1.05);
+}
+
+/* WhatsApp Button */
+.whatsapp {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #25D366;
+    padding: 15px;
+    border-radius: 50%;
+    font-size: 20px;
+    text-decoration: none;
+    color: #fff;
+}
+
+/* Footer */
+footer {
+    padding: 20px;
+    text-align: center;
+    color: #aaa;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<nav>
+    <div>
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#portfolio">Portfolio</a>
+    </div>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+    <!-- LOGO -->
+    <img src="https://i.pinimg.com/1200x/f0/42/60/f04260c890365f95521ccb4c61b26770.jpg" alt="Brothers Graphics Logo">
+
+    <h1>Brothers Graphics</h1>
+    <p>Creative Printing & Design Solutions</p>
+</div>
+
+<!-- About -->
+<section id="about">
+    <h2>About Us</h2>
+    <p>We are a professional printing and design shop offering high-quality banners, flex printing, visiting cards, posters, and digital designs.</p>
+</section>
+
+<!-- Services -->
+<section id="services">
+    <h2>Our Services</h2>
+    <div class="services">
+        <div class="card">Flex Printing</div>
+        <div class="card">Banner Design</div>
+        <div class="card">Visiting Cards</div>
+        <div class="card">Logo Design</div>
+    </div>
+</section>
+
+<!-- Portfolio -->
+<section id="portfolio">
+    <h2>Our Work</h2>
+    <div class="gallery">
+        <img src="https://i.pinimg.com/736x/9f/28/b7/9f28b75d9f5a8727a4d8d4322ffc2176.jpg" alt="">
+        <img src="https://i.pinimg.com/1200x/37/c3/09/37c309cb6318628af201a37eab543f88.jpg" alt="">
+        <img src="https://i.pinimg.com/1200x/37/c3/09/37c309cb6318628af201a37eab543f88.jpg" alt="">
+        <img src="https://i.pinimg.com/1200x/37/c3/09/37c309cb6318628af201a37eab543f88.jpg" alt="">
+    </div>
+</section>
+
+<!-- WhatsApp -->
+<a href="https://wa.me/919999999999" class="whatsapp">💬</a>
+
+<!-- Footer -->
+<footer>
+    <p>© 2026 Brothers Graphics. All Rights Reserved.</p>
+</footer>
+
+</body>
+</html>
