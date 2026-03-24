@@ -1,212 +1,1642 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brothers Graphics</title>
-
+<title>Brothers Graphics — Design & Print Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
-}
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-body {
-    background: #0f0f0f;
-    color: #fff;
-    scroll-behavior: smooth;
-}
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #1a1a1a;
+    --surface: #1e1e1e;
+    --border: rgba(255,255,255,0.08);
+    --text: #f0ece4;
+    --muted: #888;
+    --accent: #e8c547;
+    --accent2: #ff5c35;
+    --white: #ffffff;
+    --ink: #0a0a0a;
+    --transition: 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
 
-/* Navbar */
-nav {
-    position: fixed;
-    width: 100%;
-    padding: 15px 40px;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(10px);
-    display: flex;
-    justify-content: flex-end;
-    z-index: 1000;
-}
+  [data-theme="light"] {
+    --bg: #f5f0e8;
+    --bg2: #ede8df;
+    --bg3: #e2ddd5;
+    --surface: #ddd8cf;
+    --border: rgba(0,0,0,0.10);
+    --text: #1a1510;
+    --muted: #6b6458;
+    --accent: #c8a012;
+    --accent2: #e03a1a;
+    --ink: #f5f0e8;
+  }
 
-nav a {
-    color: #fff;
-    text-decoration: none;
-    margin-left: 20px;
-}
+  html { scroll-behavior: smooth; }
 
-/* Hero */
-.hero {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
 
-/* LOGO STYLE */
-.hero img {
-    width: 180px;
-    margin-bottom: 20px;
-    border-radius: 20px;
-    animation: glow 2s infinite alternate;
-}
-
-@keyframes glow {
-    from {
-        box-shadow: 0 0 10px #00ffcc;
-    }
-    to {
-        box-shadow: 0 0 30px #00ffcc;
-    }
-}
-
-.hero h1 {
-    font-size: 3rem;
-    color: #00ffcc;
-}
-
-.hero p {
-    margin-top: 10px;
-    color: #aaa;
-}
-
-/* Sections */
-section {
-    padding: 80px 40px;
-    text-align: center;
-}
-
-h2 {
-    margin-bottom: 20px;
-    color: #00ffcc;
-}
-
-/* Services */
-.services {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-}
-
-.card {
-    background: #1a1a1a;
-    padding: 20px;
-    width: 250px;
-    border-radius: 10px;
-    transition: 0.3s;
-}
-
-.card:hover {
-    transform: translateY(-10px);
-    background: #00ffcc20;
-}
-
-/* Gallery */
-.gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-}
-
-.gallery img {
-    width: 100%;
-    border-radius: 10px;
-    transition: 0.3s;
-}
-
-.gallery img:hover {
-    transform: scale(1.05);
-}
-
-/* WhatsApp Button */
-.whatsapp {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #25D366;
-    padding: 15px;
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed; top: 0; left: 0; z-index: 9999;
+    pointer-events: none;
+  }
+  .cursor-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
     border-radius: 50%;
-    font-size: 20px;
-    text-decoration: none;
-    color: #fff;
-}
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, background 0.3s;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    transform: translate(-50%,-50%);
+    transition: transform 0.18s cubic-bezier(0.16,1,0.3,1), width 0.3s, height 0.3s, opacity 0.3s;
+    opacity: 0.6;
+  }
+  body:has(a:hover) .cursor-ring,
+  body:has(button:hover) .cursor-ring {
+    width: 56px; height: 56px; opacity: 1;
+  }
 
-/* Footer */
-footer {
-    padding: 20px;
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.5rem 4rem;
+    background: rgba(10,10,10,0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.4s;
+  }
+  [data-theme="light"] nav { background: rgba(245,240,232,0.75); }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 14px;
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 44px; height: 44px;
+    background: var(--accent);
+    border-radius: 4px;
+    display: grid; place-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .logo-mark::after {
+    content: '';
+    position: absolute;
+    width: 22px; height: 22px;
+    border: 3px solid var(--ink);
+    border-radius: 2px;
+    transform: rotate(15deg);
+  }
+  .logo-mark::before {
+    content: 'BG';
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    position: relative; z-index: 1;
+    letter-spacing: 1px;
+  }
+  .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+  .logo-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.35rem;
+    letter-spacing: 3px;
+    color: var(--text);
+  }
+  .logo-tagline {
+    font-size: 0.6rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .nav-links {
+    display: flex; align-items: center; gap: 3rem;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a:hover::after { width: 100%; }
+
+  .theme-toggle {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    cursor: none;
+    font-size: 1rem;
+    display: grid; place-items: center;
+    transition: all 0.3s;
+  }
+  .theme-toggle:hover { background: var(--accent); color: var(--ink); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 70% 50%, rgba(232,197,71,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(255,92,53,0.04) 0%, transparent 50%);
+  }
+  .hero-lines {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 900px;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(232,197,71,0.1);
+    border: 1px solid rgba(232,197,71,0.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2rem;
+    animation: fadeUp 0.8s both 0.2s;
+  }
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.4); }
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4.5rem, 12vw, 10rem);
+    line-height: 0.9;
+    letter-spacing: 2px;
+    animation: fadeUp 0.8s both 0.3s;
+  }
+  .hero h1 .line-accent { color: var(--accent); }
+  .hero h1 .line-outline {
+    -webkit-text-stroke: 1px var(--text);
+    color: transparent;
+  }
+
+  .hero-desc {
+    margin-top: 2rem;
+    max-width: 500px;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    animation: fadeUp 0.8s both 0.5s;
+  }
+
+  .hero-cta {
+    margin-top: 3rem;
+    display: flex; align-items: center; gap: 1.5rem;
+    animation: fadeUp 0.8s both 0.6s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--ink);
+    padding: 1rem 2.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.15);
+    transform: translateX(-101%);
+    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+  }
+  .btn-primary:hover::after { transform: translateX(0); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(232,197,71,0.3); }
+
+  .btn-ghost {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 10px;
+    transition: gap 0.3s;
+  }
+  .btn-ghost:hover { gap: 16px; }
+  .btn-ghost .arrow { color: var(--accent); font-size: 1.2rem; }
+
+  .hero-stats {
+    position: absolute;
+    right: 4rem; bottom: 4rem;
+    display: flex; gap: 3rem;
+    animation: fadeUp 0.8s both 0.8s;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    left: 4rem; bottom: 3rem;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 0.65rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    animation: fadeUp 0.8s both 1s;
+  }
+  .scroll-line {
+    width: 50px; height: 1px;
+    background: var(--muted);
+    position: relative; overflow: hidden;
+  }
+  .scroll-line::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--accent);
+    animation: scanLine 2s infinite;
+  }
+  @keyframes scanLine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SERVICES TICKER */
+  .ticker {
+    background: var(--accent);
+    padding: 12px 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .ticker-inner {
+    display: flex;
+    animation: ticker 20s linear infinite;
+    width: max-content;
+  }
+  .ticker-item {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0 2rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 3px;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .ticker-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ink); opacity: 0.4; }
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* SECTIONS */
+  section { padding: 8rem 4rem; }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::before {
+    content: '';
+    width: 30px; height: 1px;
+    background: var(--accent);
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    line-height: 1;
+    letter-spacing: 2px;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+    margin-top: 4rem;
+  }
+  .about-visual {
+    position: relative;
+    height: 520px;
+  }
+  .about-card {
+    position: absolute;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .about-card-main {
+    width: 340px; height: 400px;
+    top: 0; left: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg3);
+  }
+  .about-card-main .card-inner {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 1.5rem;
+  }
+  .about-logo-large {
+    width: 100px; height: 100px;
+    background: var(--accent);
+    border-radius: 12px;
+    display: grid; place-items: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--ink);
+    letter-spacing: 3px;
+  }
+  .about-card-main h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 4px;
     text-align: center;
-    color: #aaa;
-}
+  }
+  .about-card-main p {
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .about-card-accent {
+    width: 220px; height: 140px;
+    bottom: 30px; right: 0;
+    background: var(--accent);
+    display: flex; flex-direction: column;
+    justify-content: center; padding: 2rem;
+  }
+  .about-card-accent .big-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .about-card-accent .small-text {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0.7;
+    margin-top: 4px;
+  }
+
+  .floating-tag {
+    position: absolute;
+    right: 20px; top: 20px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    animation: floatY 3s ease-in-out infinite;
+  }
+  @keyframes floatY {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .about-text p {
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+  }
+  .about-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+  .feature {
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: all 0.3s;
+  }
+  .feature:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+  .feature-icon { font-size: 1.5rem; margin-bottom: 0.8rem; }
+  .feature h4 {
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .feature p { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+
+  /* GALLERY */
+  #gallery { background: var(--bg2); }
+
+  .gallery-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 4rem;
+  }
+  .filter-tabs {
+    display: flex; gap: 0.5rem;
+  }
+  .filter-tab {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: none;
+    transition: all 0.3s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .filter-tab.active,
+  .filter-tab:hover {
+    background: var(--accent);
+    color: var(--ink);
+    border-color: var(--accent);
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto;
+    gap: 1.2rem;
+  }
+
+  .gallery-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: none;
+    background: var(--surface);
+  }
+  .gallery-item:nth-child(1) { grid-column: span 5; grid-row: span 2; }
+  .gallery-item:nth-child(2) { grid-column: span 4; }
+  .gallery-item:nth-child(3) { grid-column: span 3; }
+  .gallery-item:nth-child(4) { grid-column: span 4; }
+  .gallery-item:nth-child(5) { grid-column: span 3; }
+  .gallery-item:nth-child(6) { grid-column: span 4; }
+  .gallery-item:nth-child(7) { grid-column: span 4; }
+  .gallery-item:nth-child(8) { grid-column: span 4; }
+
+  .gallery-visual {
+    width: 100%; height: 100%;
+    min-height: 220px;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    position: relative;
+    overflow: hidden;
+  }
+  .gallery-item:nth-child(1) .gallery-visual { min-height: 460px; }
+
+  .gallery-item:hover .gallery-visual { transform: scale(1.05); }
+
+  /* Each card gets a unique design */
+  .gv-1 { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+  .gv-2 { background: linear-gradient(135deg, #2d1b00 0%, #5c3a00 100%); }
+  .gv-3 { background: linear-gradient(135deg, #0d2818 0%, #1a4a2e 100%); }
+  .gv-4 { background: linear-gradient(135deg, #1a0a1a 0%, #3d1a3d 100%); }
+  .gv-5 { background: linear-gradient(135deg, #1a1a00 0%, #3d3d00 100%); }
+  .gv-6 { background: linear-gradient(135deg, #1a0000 0%, #4d0000 100%); }
+  .gv-7 { background: linear-gradient(135deg, #00141a 0%, #003347 100%); }
+  .gv-8 { background: linear-gradient(135deg, #0d0d0d 0%, #2a2a2a 100%); }
+
+  /* SVG mock designs inside gallery */
+  .mock-brochure {
+    width: 120px; height: 160px;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 20px 20px 60px rgba(0,0,0,0.4);
+    position: relative; overflow: hidden;
+    transform: rotate(-3deg);
+  }
+  .mock-brochure::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 55px;
+    background: var(--accent);
+  }
+  .mock-brochure::after {
+    content: 'BROTHERS\nGRAPHICS';
+    white-space: pre;
+    position: absolute;
+    top: 8px; left: 10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    color: var(--ink);
+    letter-spacing: 2px;
+    line-height: 1.3;
+  }
+
+  .mock-brochure-2 {
+    width: 150px; height: 200px;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 20px 20px 60px rgba(0,0,0,0.5);
+    position: relative; overflow: hidden;
+    transform: rotate(2deg);
+  }
+  .mock-brochure-2::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #1a1a2e 0%, #0f3460 60%, #e8c547 100%);
+  }
+  .mock-brochure-2::after {
+    content: 'ANNUAL\nREPORT\n2025';
+    white-space: pre;
+    position: absolute;
+    top: 20px; left: 15px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: white;
+    line-height: 1.2;
+    letter-spacing: 3px;
+  }
+
+  .mock-card {
+    width: 180px; height: 100px;
+    background: #111;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    position: relative; overflow: hidden;
+    transform: rotate(-2deg);
+  }
+  .mock-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; right: -20px;
+    width: 100px; height: 100px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0.3;
+  }
+  .mock-card::after {
+    content: 'BROTHERS\nGRAPHICS';
+    white-space: pre;
+    position: absolute;
+    top: 14px; left: 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    line-height: 1.4;
+  }
+
+  .mock-logo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 20px;
+  }
+  .logo-chip {
+    width: 80px; height: 80px;
+    border-radius: 12px;
+    display: grid; place-items: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+  }
+  .logo-chip.c1 { background: var(--accent); color: var(--ink); }
+  .logo-chip.c2 { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.15); }
+  .logo-chip.c3 { background: var(--accent2); color: white; }
+  .logo-chip.c4 { background: #e8c547; color: #0a0a0a; border: none; }
+
+  .mock-banner {
+    width: 90%; height: 90px;
+    background: linear-gradient(90deg, var(--accent) 0%, #ff9500 100%);
+    border-radius: 6px;
+    display: flex; align-items: center;
+    padding: 0 24px;
+    box-shadow: 0 10px 40px rgba(232,197,71,0.3);
+  }
+  .mock-banner-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: var(--ink);
+    letter-spacing: 4px;
+  }
+
+  .mock-tshirt {
+    width: 110px; height: 130px;
+    position: relative;
+  }
+  .tshirt-shape {
+    width: 110px; height: 130px;
+    background: #1e1e1e;
+    border-radius: 0 0 10px 10px;
+    position: relative;
+    clip-path: polygon(15% 0%, 30% 0%, 30% 15%, 70% 15%, 70% 0%, 85% 0%, 100% 20%, 90% 25%, 90% 100%, 10% 100%, 10% 25%, 0% 20%);
+  }
+  .tshirt-logo {
+    position: absolute;
+    top: 45px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .mock-sticker {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .sticker {
+    width: 80px; height: 80px;
+    border-radius: 12px;
+    display: grid; place-items: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: var(--ink);
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  }
+  .sticker.s1 { background: var(--accent); transform: rotate(-8deg); }
+  .sticker.s2 { background: var(--accent2); transform: rotate(5deg); margin-top: -15px; }
+  .sticker.s3 { background: white; transform: rotate(-3deg); margin-top: -15px; }
+
+  .mock-flex-banner {
+    display: flex; flex-direction: column; gap: 12px; padding: 20px;
+  }
+  .flex-strip {
+    height: 40px; border-radius: 4px;
+    display: flex; align-items: center;
+    padding: 0 15px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+  }
+  .flex-strip.fs1 { background: var(--accent); color: var(--ink); width: 90%; }
+  .flex-strip.fs2 { background: rgba(255,255,255,0.05); color: var(--muted); width: 70%; border: 1px solid var(--border); }
+  .flex-strip.fs3 { background: var(--accent2); color: white; width: 80%; }
+
+  /* HOVER OVERLAY */
+  .gallery-overlay {
+    position: absolute; inset: 0;
+    background: rgba(10,10,10,0.85);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s;
+    padding: 2rem;
+    text-align: center;
+    backdrop-filter: blur(4px);
+  }
+  .gallery-item:hover .gallery-overlay { opacity: 1; }
+  .overlay-category {
+    font-size: 0.6rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+  .overlay-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-style: italic;
+    color: white;
+    margin-bottom: 1rem;
+  }
+  .overlay-view {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent);
+    color: var(--ink);
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    transform: translateY(10px);
+    transition: transform 0.4s 0.1s;
+  }
+  .gallery-item:hover .overlay-view { transform: translateY(0); }
+
+  /* SERVICES */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 4rem;
+  }
+  .service-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2.5rem;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 0.4s;
+    transform-origin: left;
+  }
+  .service-card:hover::before { transform: scaleX(1); }
+  .service-card:hover { transform: translateY(-6px); border-color: rgba(232,197,71,0.2); }
+
+  .service-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    color: rgba(232,197,71,0.1);
+    line-height: 1;
+    margin-bottom: 1rem;
+    transition: color 0.4s;
+  }
+  .service-card:hover .service-num { color: rgba(232,197,71,0.25); }
+  .service-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .service-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    margin-bottom: 0.8rem;
+  }
+  .service-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+  /* PROCESS */
+  #process { background: var(--bg2); }
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-top: 4rem;
+    position: relative;
+  }
+  .process-steps::before {
+    content: '';
+    position: absolute;
+    top: 2.5rem; left: 12%;
+    right: 12%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--accent), transparent);
+    opacity: 0.3;
+  }
+  .process-step { text-align: center; position: relative; }
+  .step-circle {
+    width: 50px; height: 50px;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    display: grid; place-items: center;
+    margin: 0 auto 1.5rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    color: var(--accent);
+    background: var(--bg2);
+    transition: all 0.3s;
+  }
+  .process-step:hover .step-circle {
+    background: var(--accent);
+    color: var(--ink);
+    transform: scale(1.15);
+  }
+  .step-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    margin-bottom: 0.6rem;
+  }
+  .step-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+  /* TESTIMONIALS */
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 4rem;
+  }
+  .testimonial {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    transition: all 0.3s;
+  }
+  .testimonial:hover {
+    border-color: rgba(232,197,71,0.2);
+    transform: translateY(-4px);
+  }
+  .stars { color: var(--accent); font-size: 0.9rem; margin-bottom: 1.2rem; letter-spacing: 3px; }
+  .testimonial-text {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+  .testimonial-author {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .author-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    color: var(--ink);
+    font-weight: bold;
+  }
+  .author-name { font-size: 0.85rem; font-weight: 500; }
+  .author-role { font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; }
+
+  /* CONTACT */
+  #contact { background: var(--bg); }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    margin-top: 4rem;
+    align-items: start;
+  }
+  .contact-info p {
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 3rem;
+  }
+  .contact-details { display: flex; flex-direction: column; gap: 1.5rem; }
+  .contact-item {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.3s;
+  }
+  .contact-item:hover { border-color: var(--accent); }
+  .contact-icon { font-size: 1.2rem; margin-top: 2px; }
+  .contact-label { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+  .contact-val { font-size: 0.9rem; color: var(--text); }
+
+  .contact-form { display: flex; flex-direction: column; gap: 1.2rem; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 1rem 1.2rem;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    outline: none;
+    resize: none;
+  }
+  .form-group select option { background: var(--surface); }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus { border-color: var(--accent); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .btn-submit {
+    background: var(--accent);
+    color: var(--ink);
+    border: none;
+    padding: 1.1rem 2.5rem;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: none;
+    transition: all 0.3s;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(232,197,71,0.3); }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg3);
+    border-top: 1px solid var(--border);
+    padding: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-left .footer-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 5px;
+    margin-bottom: 0.5rem;
+  }
+  .footer-left p { color: var(--muted); font-size: 0.8rem; }
+  .footer-links { display: flex; gap: 2rem; }
+  .footer-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .footer-links a:hover { color: var(--accent); }
+  .footer-copy {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .footer-copy span { color: var(--accent); }
+
+  /* SCROLL ANIMATIONS */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* Stagger children */
+  .reveal-stagger > * {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal-stagger.visible > *:nth-child(1) { opacity:1; transform:none; transition-delay: 0.05s; }
+  .reveal-stagger.visible > *:nth-child(2) { opacity:1; transform:none; transition-delay: 0.15s; }
+  .reveal-stagger.visible > *:nth-child(3) { opacity:1; transform:none; transition-delay: 0.25s; }
+  .reveal-stagger.visible > *:nth-child(4) { opacity:1; transform:none; transition-delay: 0.35s; }
+  .reveal-stagger.visible > *:nth-child(5) { opacity:1; transform:none; transition-delay: 0.45s; }
+  .reveal-stagger.visible > *:nth-child(6) { opacity:1; transform:none; transition-delay: 0.55s; }
+  .reveal-stagger.visible > *:nth-child(7) { opacity:1; transform:none; transition-delay: 0.65s; }
+  .reveal-stagger.visible > *:nth-child(8) { opacity:1; transform:none; transition-delay: 0.75s; }
+
+  @media (max-width: 1024px) {
+    nav { padding: 1.2rem 2rem; }
+    .nav-links { gap: 1.5rem; }
+    section { padding: 6rem 2rem; }
+    .hero { padding: 0 2rem; }
+    .hero-stats { right: 2rem; }
+    .scroll-indicator { left: 2rem; }
+    .about-grid { gap: 3rem; }
+    .gallery-item:nth-child(1) { grid-column: span 7; }
+    .gallery-item:nth-child(2) { grid-column: span 5; }
+    .gallery-item:nth-child(3) { grid-column: span 6; }
+    .gallery-item:nth-child(4) { grid-column: span 6; }
+    .gallery-item:nth-child(5) { grid-column: span 4; }
+    .gallery-item:nth-child(6) { grid-column: span 8; }
+    .gallery-item:nth-child(7) { grid-column: span 6; }
+    .gallery-item:nth-child(8) { grid-column: span 6; }
+    .services-grid { grid-template-columns: 1fr 1fr; }
+    .contact-grid { gap: 3rem; }
+    footer { flex-direction: column; gap: 2rem; text-align: center; }
+    .footer-links { flex-wrap: wrap; justify-content: center; }
+  }
 </style>
 </head>
-
 <body>
 
-<!-- Navbar -->
+<!-- CUSTOM CURSOR -->
+<div class="cursor" id="cursorDot"><div class="cursor-dot"></div></div>
+<div class="cursor" id="cursorRing"><div class="cursor-ring"></div></div>
+
+<!-- NAV -->
 <nav>
-    <div>
-        <a href="#about">About</a>
-        <a href="#services">Services</a>
-        <a href="#portfolio">Portfolio</a>
+  <a href="#" class="nav-logo">
+    <div class="logo-mark"></div>
+    <div class="logo-text">
+      <span class="logo-name">Brothers Graphics</span>
+      <span class="logo-tagline">Design &amp; Print Studio</span>
     </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="theme-toggle" id="themeToggle" title="Toggle theme">☀</button>
 </nav>
 
-<!-- Hero -->
-<div class="hero">
-    <!-- LOGO -->
-    <img src="https://i.pinimg.com/1200x/f0/42/60/f04260c890365f95521ccb4c61b26770.jpg" alt="Brothers Graphics Logo">
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-lines"></div>
 
-    <h1>Brothers Graphics</h1>
-    <p>Creative Printing & Design Solutions</p>
+  <div class="hero-content">
+    <div class="hero-badge">✦ Madurai's Premier Print Studio</div>
+    <h1>
+      <span class="line-accent">BROTHERS</span><br>
+      <span class="line-outline">GRAPHICS</span><br>
+      <span>STUDIO</span>
+    </h1>
+    <p class="hero-desc">We craft visual identities and premium print materials that make brands impossible to forget. From business cards to building-sized banners — precision in every pixel.</p>
+    <div class="hero-cta">
+      <a href="#gallery" class="btn-primary">View Our Work</a>
+      <a href="#contact" class="btn-ghost">Get a Quote <span class="arrow">→</span></a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">850+</div>
+      <div class="stat-label">Projects Done</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">12</div>
+      <div class="stat-label">Years Active</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">300+</div>
+      <div class="stat-label">Happy Clients</div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span class="scroll-line"></span>
+    Scroll to explore
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item">Business Cards <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Flex Banners <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Logo Design <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Brochures <span class="ticker-dot"></span></span>
+    <span class="ticker-item">T-Shirt Printing <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Sticker Printing <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Visiting Cards <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Wedding Invitations <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Packaging Design <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Digital Printing <span class="ticker-dot"></span></span>
+    <!-- Duplicate for seamless loop -->
+    <span class="ticker-item">Business Cards <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Flex Banners <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Logo Design <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Brochures <span class="ticker-dot"></span></span>
+    <span class="ticker-item">T-Shirt Printing <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Sticker Printing <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Visiting Cards <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Wedding Invitations <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Packaging Design <span class="ticker-dot"></span></span>
+    <span class="ticker-item">Digital Printing <span class="ticker-dot"></span></span>
+  </div>
 </div>
 
-<!-- About -->
+<!-- ABOUT -->
 <section id="about">
-    <h2>About Us</h2>
-    <p>We are a professional printing and design shop offering high-quality banners, flex printing, visiting cards, posters, and digital designs.</p>
+  <div class="about-grid">
+    <div class="about-visual reveal">
+      <div class="about-card about-card-main">
+        <div class="card-inner">
+          <div class="about-logo-large">BG</div>
+          <h3>Brothers Graphics</h3>
+          <p>Est. 2012 · Madurai</p>
+        </div>
+      </div>
+      <div class="about-card about-card-accent">
+        <div class="big-num">12+</div>
+        <div class="small-text">Years of Excellence</div>
+      </div>
+      <div class="floating-tag">★ 4.9 Rating</div>
+    </div>
+
+    <div class="about-text">
+      <div class="section-label reveal">Our Story</div>
+      <h2 class="section-title reveal">Where Ink Meets <em style="font-family:'Playfair Display',serif; color:var(--accent)">Imagination</em></h2>
+      <p class="reveal">Brothers Graphics was founded by two brothers with a shared passion for design and a relentless obsession with print quality. From a small shop in Madurai to a full-service design-and-print studio, we've grown by delivering work that speaks louder than words.</p>
+      <p class="reveal">Every project is treated as a canvas. Whether you need a simple visiting card or a complex brand identity, we bring the same energy, care, and craftsmanship to every job.</p>
+
+      <div class="about-features reveal-stagger">
+        <div class="feature">
+          <div class="feature-icon">🎨</div>
+          <h4>Creative Design</h4>
+          <p>In-house designers who understand your brand.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🖨️</div>
+          <h4>Premium Print</h4>
+          <p>State-of-the-art printers for crisp results.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">⚡</div>
+          <h4>Fast Turnaround</h4>
+          <p>Express orders delivered within 24 hours.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">💎</div>
+          <h4>Quality Assured</h4>
+          <p>Every print inspected before delivery.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- Services -->
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="gallery-header">
+    <div>
+      <div class="section-label reveal">Our Work</div>
+      <h2 class="section-title reveal">Real Projects, <br>Real Impact</h2>
+    </div>
+    <div class="filter-tabs reveal">
+      <button class="filter-tab active" onclick="filterGallery(this,'all')">All</button>
+      <button class="filter-tab" onclick="filterGallery(this,'branding')">Branding</button>
+      <button class="filter-tab" onclick="filterGallery(this,'print')">Print</button>
+      <button class="filter-tab" onclick="filterGallery(this,'digital')">Digital</button>
+    </div>
+  </div>
+
+  <div class="gallery-grid reveal-stagger">
+    <div class="gallery-item" data-cat="branding">
+      <div class="gallery-visual gv-1">
+        <div class="mock-brochure-2"></div>
+        <div class="mock-brochure" style="position:absolute; right:15%; bottom:10%;"></div>
+      </div>
+      <div class="gallery-overlay">
+        <div class="overlay-category">Branding</div>
+        <div class="overlay-title">Kamaraj Textiles — Brand Identity</div>
+        <div class="overlay-view">View Project ↗</div>
+      </div>
+    </div>
+
+    <div class="gallery-item" data-cat="print">
+      <div class="gallery-visual gv-2">
+        <div class="mock-card"></div>
+      </div>
+      <div class="gallery-overlay">
+        <div class="overlay-category">Print</div>
+        <div class="overlay-title">Premium Business Cards</div>
+        <div class="overlay-view">View Project ↗</div>
+      </div>
+    </div>
+
+    <div class="gallery-item" data-cat="branding">
+      <div class="gallery-visual gv-3">
+        <div class="mock-logo-grid">
+          <div class="logo-chip c1">BG</div>
+          <div class="logo-chip c2">TM</div>
+          <div class="logo-chip c3">KR</div>
+          <div class="logo-chip c4">SL</div>
+        </div>
+      </div>
+      <div class="gallery-overlay">
+        <div class="overlay-category">Branding</div>
+        <div class="overlay-title">Logo Design Collection</div>
+        <div class="overlay-view">View Project ↗</div>
+      </div>
+    </div>
+
+    <div class="gallery-item" data-cat="digital">
+      <div class="gallery-visual gv-4">
+        <div class="mock-banner"><span class="mock-banner-text">GRAND OPENING — 40% OFF</span></div>
+      </div>
+      <div class="gallery-overlay">
+        <div class="overlay-category">Digital</div>
+        <div class="overlay-title">Digital Banner Designs</div>
+        <div class="overlay-view">View Project ↗</div>
+      </div>
+    </div>
+
+    <div class="gallery-item" data-cat="print">
+      <div class="gallery-visual gv-5">
+        <div class="mock-tshirt">
+          <div class="tshirt-shape"><div class="tshirt-logo">BROTHERS<br>GRAPHICS</div></div>
+        </div>
+      </div>
+      <div class="gallery-overlay">
+        <div class="overlay-category">Print</div>
+        <div class="overlay-title">Custom T-Shirt Printing</div>
+        <div class="overlay-view">View Project ↗</div>
+      </div>
+    </div>
+
+    <div class="gallery-item" data-cat="print">
+      <div class="gallery-visual gv-6">
+        <div class="mock-sticker">
+          <div class="sticker s1">SALE<br>50%</div>
+          <div class="sticker s2">NEW<br>LAUNCH</div>
+          <div class="sticker s3" style="color:#0a0a0a">LIMITED<br>EDITION</div>
+        </div>
+      </div>
+      <div class="gallery-overlay">
+        <div class="overlay-category">Print</div>
+        <div class="overlay-title">Sticker &amp; Label Designs</div>
+        <div class="overlay-view">View Project ↗</div>
+      </div>
+    </div>
+
+    <div class="gallery-item" data-cat="digital">
+      <div class="gallery-visual gv-7">
+        <div class="mock-flex-banner">
+          <div class="flex-strip fs1">MEGA SALE — THIS WEEKEND</div>
+          <div class="flex-strip fs2">Brothers Graphics · Est. 2012</div>
+          <div class="flex-strip fs3">ORDER NOW · 98400 00000</div>
+        </div>
+      </div>
+      <div class="gallery-overlay">
+        <div class="overlay-category">Print</div>
+        <div class="overlay-title">Flex &amp; Vinyl Banners</div>
+        <div class="overlay-view">View Project ↗</div>
+      </div>
+    </div>
+
+    <div class="gallery-item" data-cat="branding">
+      <div class="gallery-visual gv-8">
+        <div style="text-align:center; padding:20px;">
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:2.5rem; letter-spacing:6px; color:var(--accent); line-height:1;">MEENAKSHI<br><span style="color:white; font-size:1.4rem; letter-spacing:4px">SWEETS</span></div>
+          <div style="width:60px; height:2px; background:var(--accent); margin:12px auto;"></div>
+          <div style="font-size:0.65rem; letter-spacing:5px; color:var(--muted); text-transform:uppercase">Est. 1995 · Madurai</div>
+        </div>
+      </div>
+      <div class="gallery-overlay">
+        <div class="overlay-category">Branding</div>
+        <div class="overlay-title">Meenakshi Sweets Rebrand</div>
+        <div class="overlay-view">View Project ↗</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
 <section id="services">
-    <h2>Our Services</h2>
-    <div class="services">
-        <div class="card">Flex Printing</div>
-        <div class="card">Banner Design</div>
-        <div class="card">Visiting Cards</div>
-        <div class="card">Logo Design</div>
+  <div class="section-label reveal">What We Do</div>
+  <h2 class="section-title reveal">Full-Service <br>Design &amp; Print</h2>
+
+  <div class="services-grid reveal-stagger">
+    <div class="service-card">
+      <div class="service-num">01</div>
+      <div class="service-icon">🎨</div>
+      <div class="service-title">Brand Identity</div>
+      <p class="service-desc">Logo design, color palettes, typography systems, and brand guidelines that define who you are and how you're remembered.</p>
     </div>
+    <div class="service-card">
+      <div class="service-num">02</div>
+      <div class="service-icon">🖨️</div>
+      <div class="service-title">Offset Printing</div>
+      <p class="service-desc">High-volume, vibrant offset printing for brochures, catalogs, and magazines with unmatched color consistency.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-num">03</div>
+      <div class="service-icon">📋</div>
+      <div class="service-title">Flex & Banner</div>
+      <p class="service-desc">Large-format printing for hoardings, flex boards, vinyl banners, and event displays that command attention.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-num">04</div>
+      <div class="service-icon">👕</div>
+      <div class="service-title">Garment Printing</div>
+      <p class="service-desc">Custom screen-printing and digital printing on T-shirts, uniforms, caps, and corporate merchandise.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-num">05</div>
+      <div class="service-icon">📦</div>
+      <div class="service-title">Packaging Design</div>
+      <p class="service-desc">Product boxes, labels, stickers, and packaging that makes your product stand out on any shelf.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-num">06</div>
+      <div class="service-icon">💌</div>
+      <div class="service-title">Wedding & Events</div>
+      <p class="service-desc">Luxury invitations, menus, programs, and event stationery crafted with elegance and precision.</p>
+    </div>
+  </div>
 </section>
 
-<!-- Portfolio -->
-<section id="portfolio">
-    <h2>Our Work</h2>
-    <div class="gallery">
-        <img src="https://i.pinimg.com/736x/9f/28/b7/9f28b75d9f5a8727a4d8d4322ffc2176.jpg" alt="">
-        <img src="https://i.pinimg.com/1200x/37/c3/09/37c309cb6318628af201a37eab543f88.jpg" alt="">
-        <img src="https://i.pinimg.com/1200x/37/c3/09/37c309cb6318628af201a37eab543f88.jpg" alt="">
-        <img src="https://i.pinimg.com/1200x/37/c3/09/37c309cb6318628af201a37eab543f88.jpg" alt="">
-         <img src="https://i.pinimg.com/736x/9f/28/b7/9f28b75d9f5a8727a4d8d4322ffc2176.jpg" alt="">
-        <img src="https://i.pinimg.com/1200x/37/c3/09/37c309cb6318628af201a37eab543f88.jpg" alt="">
-        <img src="https://i.pinimg.com/1200x/37/c3/09/37c309cb6318628af201a37eab543f88.jpg" alt="">
-        <img src="https://i.pinimg.com/1200x/37/c3/09/37c309cb6318628af201a37eab543f88.jpg" alt="">
-         <img src="https://i.pinimg.com/736x/9f/28/b7/9f28b75d9f5a8727a4d8d4322ffc2176.jpg" alt="">
-        <img src="https://i.pinimg.com/1200x/37/c3/09/37c309cb6318628af201a37eab543f88.jpg" alt="">
-        <img src="https://i.pinimg.com/1200x/37/c3/09/37c309cb6318628af201a37eab543f88.jpg" alt="">
-        <img src="https://i.pinimg.com/1200x/37/c3/09/37c309cb6318628af201a37eab543f88.jpg" alt="">
+<!-- PROCESS -->
+<section id="process">
+  <div class="section-label reveal">How We Work</div>
+  <h2 class="section-title reveal">Four Steps to<br><em style="font-family:'Playfair Display',serif; color:var(--accent)">Perfect Print</em></h2>
+
+  <div class="process-steps reveal-stagger">
+    <div class="process-step">
+      <div class="step-circle">01</div>
+      <div class="step-title">Consultation</div>
+      <p class="step-desc">We understand your brand, goals, and vision in a free discovery call or walkthrough.</p>
     </div>
+    <div class="process-step">
+      <div class="step-circle">02</div>
+      <div class="step-title">Design</div>
+      <p class="step-desc">Our designers craft multiple concepts for your review with unlimited revisions.</p>
+    </div>
+    <div class="process-step">
+      <div class="step-circle">03</div>
+      <div class="step-title">Print</div>
+      <p class="step-desc">Approved files go to production with rigorous quality checks at every stage.</p>
+    </div>
+    <div class="process-step">
+      <div class="step-circle">04</div>
+      <div class="step-title">Deliver</div>
+      <p class="step-desc">Packaged safely and delivered to your door — or collected from our studio.</p>
+    </div>
+  </div>
 </section>
 
-<!-- WhatsApp -->
-<a href="https://wa.me/919999999999" class="whatsapp">💬</a>
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="section-label reveal">Client Love</div>
+  <h2 class="section-title reveal">What Our Clients Say</h2>
 
-<!-- Footer -->
+  <div class="testimonials-grid reveal-stagger">
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">"Brothers Graphics transformed our entire brand. The quality of their print work is something you have to see to believe. Every card, every banner — flawless."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar" style="background:var(--accent)">RK</div>
+        <div>
+          <div class="author-name">Rajesh Kumar</div>
+          <div class="author-role">Owner · Kumaran Textiles</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">"Turnaround time is incredible. I needed 500 brochures in 24 hours for an event — they delivered by 7 AM. The design was stunning too."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar" style="background:var(--accent2)">PM</div>
+        <div>
+          <div class="author-name">Priya Mahesh</div>
+          <div class="author-role">Director · PM Events</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">"Our wedding invitations were pure art. Every guest complimented them. Brothers Graphics understood our vision instantly and delivered beyond expectations."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar" style="background:#8b5cf6">AS</div>
+        <div>
+          <div class="author-name">Arun & Savitha</div>
+          <div class="author-role">Wedding Client · 2024</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label reveal">Let's Work Together</div>
+  <h2 class="section-title reveal">Start Your<br>Next Project</h2>
+
+  <div class="contact-grid">
+    <div class="contact-info reveal">
+      <p>Ready to make your brand look unforgettable? Drop us a message or walk into our studio. We love talking about design.</p>
+      <div class="contact-details">
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div>
+            <div class="contact-label">Studio Address</div>
+            <div class="contact-val">45 Anna Nagar Main Road, Madurai — 625 020, Tamil Nadu</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📞</div>
+          <div>
+            <div class="contact-label">Phone / WhatsApp</div>
+            <div class="contact-val">+91 98400 00000</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">✉️</div>
+          <div>
+            <div class="contact-label">Email</div>
+            <div class="contact-val">hello@brothersgraphics.in</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">🕐</div>
+          <div>
+            <div class="contact-label">Working Hours</div>
+            <div class="contact-val">Mon–Sat: 9 AM – 8 PM &nbsp;·&nbsp; Sun: 10 AM – 4 PM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form reveal">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" placeholder="Rajesh Kumar">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" placeholder="+91 98400 00000">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Service Required</label>
+        <select>
+          <option value="">Select a service...</option>
+          <option>Brand Identity / Logo Design</option>
+          <option>Business Cards / Visiting Cards</option>
+          <option>Flex Banner / Hoarding</option>
+          <option>Brochure / Catalogue</option>
+          <option>T-Shirt / Garment Printing</option>
+          <option>Wedding Invitations</option>
+          <option>Packaging Design</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tell Us About Your Project</label>
+        <textarea rows="4" placeholder="Describe your project, quantity, deadline, or any specific requirements..."></textarea>
+      </div>
+      <button class="btn-submit" onclick="handleSubmit(this)">
+        <span>Send Message</span> <span>→</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
 <footer>
-    <p>© 2026 Brothers Graphics. All Rights Reserved.</p>
+  <div class="footer-left">
+    <div class="footer-brand">Brothers Graphics</div>
+    <p>Madurai's Trusted Design &amp; Print Partner since 2012.</p>
+  </div>
+  <div class="footer-links">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#services">Services</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="footer-copy">
+    © 2025 <span>Brothers Graphics</span>. All rights reserved.
+  </div>
 </footer>
 
+<script>
+  // CURSOR
+  const dot = document.querySelector('#cursorDot .cursor-dot');
+  const ring = document.querySelector('#cursorRing .cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animateCursor() {
+    dot.parentElement.style.transform = `translate(${mx}px,${my}px)`;
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.parentElement.style.transform = `translate(${rx}px,${ry}px)`;
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  // THEME TOGGLE
+  const toggle = document.getElementById('themeToggle');
+  toggle.addEventListener('click', () => {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    toggle.textContent = isDark ? '☽' : '☀';
+  });
+
+  // SCROLL REVEAL
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => observer.observe(el));
+
+  // GALLERY FILTER
+  function filterGallery(btn, cat) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.gallery-item').forEach(item => {
+      const show = cat === 'all' || item.dataset.cat === cat;
+      item.style.opacity = show ? '1' : '0.2';
+      item.style.transform = show ? '' : 'scale(0.95)';
+      item.style.transition = 'opacity 0.4s, transform 0.4s';
+      item.style.pointerEvents = show ? '' : 'none';
+    });
+  }
+
+  // FORM SUBMIT
+  function handleSubmit(btn) {
+    const span = btn.querySelector('span');
+    span.textContent = 'Sending...';
+    btn.style.opacity = '0.8';
+    setTimeout(() => {
+      span.textContent = '✓ Message Sent!';
+      btn.style.background = '#22c55e';
+      setTimeout(() => {
+        span.textContent = 'Send Message';
+        btn.style.background = '';
+        btn.style.opacity = '';
+      }, 3000);
+    }, 1500);
+  }
+
+  // PARALLAX HERO
+  document.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    const heroBg = document.querySelector('.hero-bg');
+    if (heroBg) heroBg.style.transform = `translateY(${y * 0.3}px)`;
+  });
+</script>
 </body>
 </html>
