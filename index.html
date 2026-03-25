@@ -1,1641 +1,1044 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brothers Graphics — Design & Print Studio</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Brothers Graphics — Design & Print Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Playfair+Display:ital@1&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg2: #111111;
+      --bg3: #181818;
+      --surface: #1e1e1e;
+      --border: #2a2a2a;
+      --text: #f0ece4;
+      --muted: #888;
+      --accent: #e8c547;
+      --accent2: #ff5c2b;
+      --accent-dim: rgba(232,197,71,0.12);
+      --radius: 4px;
+      --transition: 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    [data-theme="light"] {
+      --bg: #f5f1ea;
+      --bg2: #ede9e0;
+      --bg3: #e4dfd4;
+      --surface: #fff;
+      --border: #d6d0c4;
+      --text: #1a1a1a;
+      --muted: #666;
+      --accent: #c9a800;
+      --accent2: #e03d10;
+      --accent-dim: rgba(201,168,0,0.12);
+    }
 
-  :root {
-    --bg: #0a0a0a;
-    --bg2: #111111;
-    --bg3: #1a1a1a;
-    --surface: #1e1e1e;
-    --border: rgba(255,255,255,0.08);
-    --text: #f0ece4;
-    --muted: #888;
-    --accent: #e8c547;
-    --accent2: #ff5c35;
-    --white: #ffffff;
-    --ink: #0a0a0a;
-    --transition: 0.4s cubic-bezier(0.16,1,0.3,1);
-  }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  [data-theme="light"] {
-    --bg: #f5f0e8;
-    --bg2: #ede8df;
-    --bg3: #e2ddd5;
-    --surface: #ddd8cf;
-    --border: rgba(0,0,0,0.10);
-    --text: #1a1510;
-    --muted: #6b6458;
-    --accent: #c8a012;
-    --accent2: #e03a1a;
-    --ink: #f5f0e8;
-  }
+    html { scroll-behavior: smooth; }
 
-  html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      transition: background var(--transition), color var(--transition);
+    }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 300;
-    overflow-x: hidden;
-    cursor: none;
-  }
+    /* ── NOISE TEXTURE OVERLAY ─────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.4;
+    }
 
-  /* CUSTOM CURSOR */
-  .cursor {
-    position: fixed; top: 0; left: 0; z-index: 9999;
-    pointer-events: none;
-  }
-  .cursor-dot {
-    width: 8px; height: 8px;
-    background: var(--accent);
-    border-radius: 50%;
-    transform: translate(-50%,-50%);
-    transition: transform 0.1s, background 0.3s;
-  }
-  .cursor-ring {
-    width: 36px; height: 36px;
-    border: 1.5px solid var(--accent);
-    border-radius: 50%;
-    transform: translate(-50%,-50%);
-    transition: transform 0.18s cubic-bezier(0.16,1,0.3,1), width 0.3s, height 0.3s, opacity 0.3s;
-    opacity: 0.6;
-  }
-  body:has(a:hover) .cursor-ring,
-  body:has(button:hover) .cursor-ring {
-    width: 56px; height: 56px; opacity: 1;
-  }
+    /* ── NAV ───────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 3rem;
+      background: rgba(10,10,10,0.75);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition), border-color var(--transition);
+    }
+    [data-theme="light"] nav { background: rgba(245,241,234,0.8); }
 
-  /* NOISE OVERLAY */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 1;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-  }
+    .nav-logo {
+      display: flex; align-items: center; gap: 0.75rem;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 42px; height: 42px;
+      background: var(--accent);
+      display: grid; place-items: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem; color: #0a0a0a;
+      letter-spacing: 0.04em;
+      clip-path: polygon(0 0,100% 0,100% 75%,85% 100%,0 100%);
+    }
+    .logo-text { line-height: 1.1; }
+    .logo-text strong {
+      display: block;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem; letter-spacing: 0.08em;
+      color: var(--text);
+    }
+    .logo-text span { font-size: 0.65rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1.5rem 4rem;
-    background: rgba(10,10,10,0.7);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-    transition: background 0.4s;
-  }
-  [data-theme="light"] nav { background: rgba(245,240,232,0.75); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.8rem;
+      letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
 
-  .nav-logo {
-    display: flex; align-items: center; gap: 14px;
-    text-decoration: none;
-  }
-  .logo-mark {
-    width: 44px; height: 44px;
-    background: var(--accent);
-    border-radius: 4px;
-    display: grid; place-items: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .logo-mark::after {
-    content: '';
-    position: absolute;
-    width: 22px; height: 22px;
-    border: 3px solid var(--ink);
-    border-radius: 2px;
-    transform: rotate(15deg);
-  }
-  .logo-mark::before {
-    content: 'BG';
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    position: relative; z-index: 1;
-    letter-spacing: 1px;
-  }
-  .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
-  .logo-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.35rem;
-    letter-spacing: 3px;
-    color: var(--text);
-  }
-  .logo-tagline {
-    font-size: 0.6rem;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
+    .theme-toggle {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); cursor: pointer; padding: 0.45rem 0.9rem;
+      border-radius: 2rem; font-size: 0.8rem; font-family: inherit;
+      display: flex; align-items: center; gap: 0.4rem;
+      transition: all 0.25s; letter-spacing: 0.04em;
+    }
+    .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
 
-  .nav-links {
-    display: flex; align-items: center; gap: 3rem;
-    list-style: none;
-  }
-  .nav-links a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 0.8rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    transition: color 0.3s;
-    position: relative;
-  }
-  .nav-links a::after {
-    content: '';
-    position: absolute; bottom: -4px; left: 0;
-    width: 0; height: 1px;
-    background: var(--accent);
-    transition: width 0.3s;
-  }
-  .nav-links a:hover { color: var(--text); }
-  .nav-links a:hover::after { width: 100%; }
+    /* ── HERO ──────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: grid; place-items: center;
+      padding: 8rem 3rem 5rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 40%, rgba(232,197,71,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 70%, rgba(255,92,43,0.05) 0%, transparent 60%);
+    }
+    .hero-grid-lines {
+      position: absolute; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.3;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 900px; }
 
-  .theme-toggle {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    cursor: none;
-    font-size: 1rem;
-    display: grid; place-items: center;
-    transition: all 0.3s;
-  }
-  .theme-toggle:hover { background: var(--accent); color: var(--ink); }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: var(--accent-dim); border: 1px solid rgba(232,197,71,0.3);
+      color: var(--accent); padding: 0.35rem 1rem;
+      border-radius: 2rem; font-size: 0.72rem; letter-spacing: 0.18em;
+      text-transform: uppercase; font-weight: 600; margin-bottom: 2rem;
+      animation: fadeUp 0.7s ease both;
+    }
+    .hero-tag::before {
+      content: ''; width: 6px; height: 6px;
+      background: var(--accent); border-radius: 50%; animation: pulse 2s infinite;
+    }
 
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    display: flex; align-items: center;
-    padding: 0 4rem;
-    position: relative;
-    overflow: hidden;
-  }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4.5rem, 12vw, 9rem);
+      line-height: 0.92; letter-spacing: 0.02em;
+      color: var(--text);
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+    .hero-title em {
+      font-family: 'Playfair Display', serif;
+      font-style: italic; color: var(--accent);
+    }
 
-  .hero-bg {
-    position: absolute; inset: 0; z-index: 0;
-    background:
-      radial-gradient(ellipse 60% 80% at 70% 50%, rgba(232,197,71,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(255,92,53,0.04) 0%, transparent 50%);
-  }
-  .hero-lines {
-    position: absolute; inset: 0; z-index: 0;
-    background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 80px 80px;
-    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
-  }
+    .hero-sub {
+      margin-top: 2rem; max-width: 480px;
+      font-size: 1rem; line-height: 1.7; color: var(--muted);
+      font-weight: 300;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
 
-  .hero-content {
-    position: relative; z-index: 2;
-    max-width: 900px;
-  }
+    .hero-cta {
+      margin-top: 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+    .btn-primary {
+      background: var(--accent); color: #0a0a0a;
+      padding: 0.85rem 2rem; border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-weight: 600;
+      font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;
+      text-decoration: none; display: inline-block;
+      clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%);
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); opacity: 0.88; }
+    .btn-outline {
+      background: transparent; color: var(--text);
+      padding: 0.85rem 2rem;
+      border: 1px solid var(--border); cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-weight: 400;
+      font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;
+      text-decoration: none; display: inline-block;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
 
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(232,197,71,0.1);
-    border: 1px solid rgba(232,197,71,0.3);
-    border-radius: 100px;
-    padding: 6px 16px;
-    font-size: 0.7rem;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 2rem;
-    animation: fadeUp 0.8s both 0.2s;
-  }
-  .hero-badge::before {
-    content: '';
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: pulse 2s infinite;
-  }
+    .hero-stats {
+      margin-top: 4rem; display: flex; gap: 3rem; flex-wrap: wrap;
+      animation: fadeUp 0.7s 0.4s ease both;
+    }
+    .stat-item { border-left: 2px solid var(--accent); padding-left: 1rem; }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem;
+      line-height: 1; color: var(--text); letter-spacing: 0.04em;
+    }
+    .stat-label { font-size: 0.7rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; margin-top: 0.2rem; }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(1.4); }
-  }
+    /* ── SECTION COMMON ────────────────────────── */
+    section { padding: 6rem 3rem; }
+    .section-header { margin-bottom: 3.5rem; }
+    .section-label {
+      font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--accent); font-weight: 600; margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .section-label::after { content: ''; flex: 0 0 30px; height: 1px; background: var(--accent); }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      line-height: 1; letter-spacing: 0.03em;
+    }
 
-  .hero h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(4.5rem, 12vw, 10rem);
-    line-height: 0.9;
-    letter-spacing: 2px;
-    animation: fadeUp 0.8s both 0.3s;
-  }
-  .hero h1 .line-accent { color: var(--accent); }
-  .hero h1 .line-outline {
-    -webkit-text-stroke: 1px var(--text);
-    color: transparent;
-  }
+    /* ── SERVICES ──────────────────────────────── */
+    .services { background: var(--bg2); }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border);
+    }
+    .service-card {
+      background: var(--bg2); padding: 2.5rem 2rem;
+      transition: background var(--transition);
+      cursor: default; position: relative; overflow: hidden;
+    }
+    .service-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      height: 2px; width: 0; background: var(--accent);
+      transition: width 0.4s ease;
+    }
+    .service-card:hover { background: var(--surface); }
+    .service-card:hover::after { width: 100%; }
+    .service-icon {
+      width: 48px; height: 48px; margin-bottom: 1.5rem;
+      display: grid; place-items: center;
+      background: var(--accent-dim); color: var(--accent);
+      font-size: 1.4rem;
+    }
+    .service-name {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem;
+      letter-spacing: 0.05em; margin-bottom: 0.6rem;
+    }
+    .service-desc { font-size: 0.85rem; line-height: 1.6; color: var(--muted); font-weight: 300; }
 
-  .hero-desc {
-    margin-top: 2rem;
-    max-width: 500px;
-    color: var(--muted);
-    font-size: 1rem;
-    line-height: 1.7;
-    animation: fadeUp 0.8s both 0.5s;
-  }
+    /* ── GALLERY ───────────────────────────────── */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: auto;
+      gap: 12px;
+    }
+    .gallery-item {
+      position: relative; overflow: hidden; cursor: pointer;
+      background: var(--surface);
+    }
+    .gallery-item:nth-child(1) { grid-column: span 5; grid-row: span 2; }
+    .gallery-item:nth-child(2) { grid-column: span 4; }
+    .gallery-item:nth-child(3) { grid-column: span 3; }
+    .gallery-item:nth-child(4) { grid-column: span 4; }
+    .gallery-item:nth-child(5) { grid-column: span 3; }
+    .gallery-item:nth-child(6) { grid-column: span 4; grid-row: span 2; }
+    .gallery-item:nth-child(7) { grid-column: span 4; }
+    .gallery-item:nth-child(8) { grid-column: span 4; }
 
-  .hero-cta {
-    margin-top: 3rem;
-    display: flex; align-items: center; gap: 1.5rem;
-    animation: fadeUp 0.8s both 0.6s;
-  }
+    .gallery-mock {
+      width: 100%; height: 100%; min-height: 220px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 1.5rem; text-align: center;
+      transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+      position: relative;
+    }
+    .gallery-item:hover .gallery-mock { transform: scale(1.04); }
 
-  .btn-primary {
-    background: var(--accent);
-    color: var(--ink);
-    padding: 1rem 2.5rem;
-    border-radius: 4px;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.85rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    transition: all 0.3s;
-    position: relative; overflow: hidden;
-  }
-  .btn-primary::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,0.15);
-    transform: translateX(-101%);
-    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
-  }
-  .btn-primary:hover::after { transform: translateX(0); }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(232,197,71,0.3); }
+    /* Project mock backgrounds */
+    .p1 { background: linear-gradient(135deg, #1a1200 0%, #3d2e00 50%, #1a1200 100%); }
+    .p2 { background: linear-gradient(135deg, #0a1628 0%, #1a3050 100%); }
+    .p3 { background: linear-gradient(135deg, #1a0a0a 0%, #3d1515 100%); }
+    .p4 { background: linear-gradient(160deg, #0e0e1a 0%, #1a1a3d 100%); }
+    .p5 { background: linear-gradient(135deg, #0a1a0a 0%, #1a3d1a 100%); }
+    .p6 { background: linear-gradient(135deg, #1a1a0a 0%, #3d3d10 100%); }
+    .p7 { background: linear-gradient(135deg, #1a0a1a 0%, #3d1a3d 100%); }
+    .p8 { background: linear-gradient(135deg, #0a1a1a 0%, #0f3d3d 100%); }
 
-  .btn-ghost {
-    color: var(--text);
-    text-decoration: none;
-    font-size: 0.85rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    display: flex; align-items: center; gap: 10px;
-    transition: gap 0.3s;
-  }
-  .btn-ghost:hover { gap: 16px; }
-  .btn-ghost .arrow { color: var(--accent); font-size: 1.2rem; }
+    /* project graphic elements */
+    .proj-shape {
+      position: absolute; inset: 0; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .proj-shape svg { opacity: 0.15; transition: opacity 0.4s; width: 60%; height: 60%; }
+    .gallery-item:hover .proj-shape svg { opacity: 0.25; }
 
-  .hero-stats {
-    position: absolute;
-    right: 4rem; bottom: 4rem;
-    display: flex; gap: 3rem;
-    animation: fadeUp 0.8s both 0.8s;
-  }
-  .stat { text-align: center; }
-  .stat-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.8rem;
-    color: var(--accent);
-    line-height: 1;
-  }
-  .stat-label {
-    font-size: 0.65rem;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 4px;
-  }
+    .gallery-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.82);
+      display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: flex-end;
+      padding: 1.5rem 1.8rem;
+      opacity: 0; transition: opacity 0.35s ease;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .gallery-tag {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); font-weight: 600; margin-bottom: 0.35rem;
+    }
+    .gallery-name {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem;
+      letter-spacing: 0.05em; line-height: 1; color: #fff; margin-bottom: 0.5rem;
+    }
+    .gallery-desc { font-size: 0.78rem; color: rgba(255,255,255,0.65); line-height: 1.5; font-weight: 300; }
+    .gallery-link {
+      margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--accent); font-weight: 600; text-decoration: none;
+      transition: gap 0.2s;
+    }
+    .gallery-link:hover { gap: 0.7rem; }
 
-  .scroll-indicator {
-    position: absolute;
-    left: 4rem; bottom: 3rem;
-    display: flex; align-items: center; gap: 12px;
-    font-size: 0.65rem;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--muted);
-    animation: fadeUp 0.8s both 1s;
-  }
-  .scroll-line {
-    width: 50px; height: 1px;
-    background: var(--muted);
-    position: relative; overflow: hidden;
-  }
-  .scroll-line::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: var(--accent);
-    animation: scanLine 2s infinite;
-  }
-  @keyframes scanLine {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-  }
+    /* Corner tag on each gallery card */
+    .corner-tag {
+      position: absolute; top: 1rem; right: 1rem; z-index: 2;
+      background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(6px);
+      font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(255,255,255,0.7); padding: 0.2rem 0.6rem;
+    }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+    /* INLINE PROJECT VISUALS */
+    .proj-logo-1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1.5rem, 4vw, 3.5rem);
+      color: var(--accent); letter-spacing: 0.15em; line-height: 1;
+      z-index: 1; position: relative; text-shadow: 0 0 40px rgba(232,197,71,0.3);
+    }
+    .proj-flyer {
+      z-index: 1; position: relative;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      padding: 1rem 1.5rem; text-align: center;
+    }
+    .proj-flyer .f-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.1em; color: #fff; }
+    .proj-flyer .f-sub { font-size: 0.65rem; color: rgba(255,255,255,0.5); letter-spacing: 0.2em; text-transform: uppercase; }
+    .proj-flyer .f-accent { color: var(--accent2); font-size: 0.7rem; margin-top: 0.3rem; font-weight: 600; }
 
-  /* SERVICES TICKER */
-  .ticker {
-    background: var(--accent);
-    padding: 12px 0;
-    overflow: hidden;
-    position: relative;
-  }
-  .ticker-inner {
-    display: flex;
-    animation: ticker 20s linear infinite;
-    width: max-content;
-  }
-  .ticker-item {
-    display: flex; align-items: center; gap: 1rem;
-    padding: 0 2rem;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.1rem;
-    letter-spacing: 3px;
-    color: var(--ink);
-    white-space: nowrap;
-  }
-  .ticker-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ink); opacity: 0.4; }
-  @keyframes ticker {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
+    .proj-business-card {
+      z-index:1; position:relative; display:flex; flex-direction:column;
+      background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12);
+      padding: 1rem 1.4rem; width: 160px; gap: 0.4rem;
+    }
+    .pbc-logo { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:var(--accent); letter-spacing:0.1em; }
+    .pbc-name { font-size:0.75rem; color:#fff; font-weight:600; }
+    .pbc-info { font-size:0.6rem; color:rgba(255,255,255,0.45); line-height:1.6; }
 
-  /* SECTIONS */
-  section { padding: 8rem 4rem; }
+    .proj-banner {
+      z-index:1; position:relative; text-align:center;
+      border-top:3px solid var(--accent2); border-bottom:3px solid var(--accent2);
+      padding: 0.8rem 1.2rem;
+    }
+    .pb-title { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:0.12em; color:#fff; line-height:1; }
+    .pb-sub { font-size:0.62rem; letter-spacing:0.25em; color:rgba(255,255,255,0.5); text-transform:uppercase; }
 
-  .section-label {
-    font-size: 0.65rem;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 1rem;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .section-label::before {
-    content: '';
-    width: 30px; height: 1px;
-    background: var(--accent);
-  }
-  .section-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(2.5rem, 6vw, 5rem);
-    line-height: 1;
-    letter-spacing: 2px;
-    margin-bottom: 1.5rem;
-  }
+    .proj-tshirt {
+      z-index:1; position:relative; text-align:center;
+    }
+    .pt-label { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.15em; color:#fff; }
+    .pt-sub { font-size:0.6rem; color:var(--accent); letter-spacing:0.2em; text-transform:uppercase; }
 
-  /* ABOUT */
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6rem;
-    align-items: center;
-    margin-top: 4rem;
-  }
-  .about-visual {
-    position: relative;
-    height: 520px;
-  }
-  .about-card {
-    position: absolute;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .about-card-main {
-    width: 340px; height: 400px;
-    top: 0; left: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--bg3);
-  }
-  .about-card-main .card-inner {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 1.5rem;
-  }
-  .about-logo-large {
-    width: 100px; height: 100px;
-    background: var(--accent);
-    border-radius: 12px;
-    display: grid; place-items: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.5rem;
-    color: var(--ink);
-    letter-spacing: 3px;
-  }
-  .about-card-main h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.8rem;
-    letter-spacing: 4px;
-    text-align: center;
-  }
-  .about-card-main p {
-    font-size: 0.7rem;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
+    .proj-menu {
+      z-index:1; position:relative;
+      background: rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+      padding: 1rem 1.2rem; width:140px;
+    }
+    .pm-head { font-family:'Bebas Neue',sans-serif; font-size:1rem; color:var(--accent); letter-spacing:0.1em; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.4rem; margin-bottom:0.5rem; }
+    .pm-item { font-size:0.62rem; color:rgba(255,255,255,0.55); line-height:1.8; display:flex; justify-content:space-between; gap:1rem; }
 
-  .about-card-accent {
-    width: 220px; height: 140px;
-    bottom: 30px; right: 0;
-    background: var(--accent);
-    display: flex; flex-direction: column;
-    justify-content: center; padding: 2rem;
-  }
-  .about-card-accent .big-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 3.5rem;
-    color: var(--ink);
-    line-height: 1;
-  }
-  .about-card-accent .small-text {
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--ink);
-    opacity: 0.7;
-    margin-top: 4px;
-  }
+    .proj-catalog {
+      z-index:1; position:relative; text-align:center;
+      display:flex; flex-direction:column; gap:0.3rem;
+    }
+    .pc-grid {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:4px; width:120px;
+    }
+    .pc-dot {
+      height:28px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+    }
+    .pc-dot:nth-child(1) { background:rgba(232,197,71,0.2); }
+    .pc-dot:nth-child(5) { background:rgba(255,92,43,0.2); }
+    .pc-title { font-family:'Bebas Neue',sans-serif; font-size:1rem; color:rgba(255,255,255,0.6); letter-spacing:0.12em; }
 
-  .floating-tag {
-    position: absolute;
-    right: 20px; top: 20px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    padding: 8px 16px;
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--accent);
-    animation: floatY 3s ease-in-out infinite;
-  }
-  @keyframes floatY {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
+    .proj-sticker {
+      z-index:1; position:relative; text-align:center;
+    }
+    .ps-circle {
+      width:100px; height:100px; border-radius:50%;
+      border:3px solid var(--accent);
+      display:grid; place-items:center;
+      background:rgba(232,197,71,0.08);
+    }
+    .ps-text { font-family:'Bebas Neue',sans-serif; font-size:1.2rem; letter-spacing:0.08em; color:var(--accent); line-height:1; }
+    .ps-sub { font-size:0.55rem; letter-spacing:0.15em; color:rgba(255,255,255,0.5); margin-top:0.4rem; text-transform:uppercase; }
 
-  .about-text p {
-    color: var(--muted);
-    line-height: 1.8;
-    margin-bottom: 1.5rem;
-    font-size: 1rem;
-  }
-  .about-features {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 2.5rem;
-  }
-  .feature {
-    padding: 1.5rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    transition: all 0.3s;
-  }
-  .feature:hover {
-    border-color: var(--accent);
-    transform: translateY(-4px);
-  }
-  .feature-icon { font-size: 1.5rem; margin-bottom: 0.8rem; }
-  .feature h4 {
-    font-size: 0.85rem;
-    font-weight: 500;
-    letter-spacing: 1px;
-    margin-bottom: 4px;
-  }
-  .feature p { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+    /* ── PROCESS ───────────────────────────────── */
+    .process { background: var(--bg2); }
+    .process-steps {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0; position: relative;
+    }
+    .process-steps::before {
+      content: ''; position: absolute; top: 28px; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+    .process-step { padding: 2rem; position: relative; }
+    .step-num {
+      font-family: 'Bebas Neue', sans-serif; font-size: 3rem;
+      color: var(--accent-dim); line-height: 1; margin-bottom: 1rem;
+      -webkit-text-stroke: 1px var(--accent); color: transparent;
+    }
+    .step-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; }
+    .step-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; font-weight: 300; }
 
-  /* GALLERY */
-  #gallery { background: var(--bg2); }
+    /* ── TESTIMONIALS ──────────────────────────── */
+    .testimonials-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .testimonial-card {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 2rem; position: relative;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .testimonial-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+    .quote-mark {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: 4rem; line-height: 0.7; color: var(--accent); opacity: 0.4;
+      margin-bottom: 1rem; display: block;
+    }
+    .testimonial-text { font-size: 0.88rem; line-height: 1.7; color: var(--muted); font-weight: 300; margin-bottom: 1.5rem; }
+    .testimonial-author { display: flex; align-items: center; gap: 0.75rem; }
+    .author-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--accent-dim); border: 1px solid rgba(232,197,71,0.3);
+      display: grid; place-items: center;
+      font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--accent);
+    }
+    .author-name { font-size: 0.82rem; font-weight: 600; }
+    .author-role { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.05em; }
 
-  .gallery-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 4rem;
-  }
-  .filter-tabs {
-    display: flex; gap: 0.5rem;
-  }
-  .filter-tab {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 8px 20px;
-    border-radius: 100px;
-    font-size: 0.75rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: none;
-    transition: all 0.3s;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .filter-tab.active,
-  .filter-tab:hover {
-    background: var(--accent);
-    color: var(--ink);
-    border-color: var(--accent);
-  }
+    /* ── CONTACT ───────────────────────────────── */
+    .contact { background: var(--bg); }
+    .contact-inner {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+      align-items: start;
+    }
+    .contact-info p { font-size: 0.95rem; line-height: 1.8; color: var(--muted); font-weight: 300; margin-bottom: 2rem; }
+    .contact-detail { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.2rem; }
+    .contact-icon {
+      width: 36px; height: 36px; flex-shrink: 0;
+      background: var(--accent-dim); border: 1px solid rgba(232,197,71,0.2);
+      display: grid; place-items: center; font-size: 1rem;
+    }
+    .contact-detail-text { font-size: 0.85rem; line-height: 1.5; }
+    .contact-detail-label { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.15rem; }
 
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: auto;
-    gap: 1.2rem;
-  }
+    .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-label { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    .form-input, .form-textarea {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); padding: 0.8rem 1rem; font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem; outline: none; transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+    .form-textarea { resize: vertical; min-height: 110px; }
+    .form-select {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); padding: 0.8rem 1rem; font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem; outline: none; cursor: pointer; transition: border-color 0.2s;
+      -webkit-appearance: none; appearance: none;
+    }
+    .form-select:focus { border-color: var(--accent); }
 
-  .gallery-item {
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: none;
-    background: var(--surface);
-  }
-  .gallery-item:nth-child(1) { grid-column: span 5; grid-row: span 2; }
-  .gallery-item:nth-child(2) { grid-column: span 4; }
-  .gallery-item:nth-child(3) { grid-column: span 3; }
-  .gallery-item:nth-child(4) { grid-column: span 4; }
-  .gallery-item:nth-child(5) { grid-column: span 3; }
-  .gallery-item:nth-child(6) { grid-column: span 4; }
-  .gallery-item:nth-child(7) { grid-column: span 4; }
-  .gallery-item:nth-child(8) { grid-column: span 4; }
+    /* ── FOOTER ────────────────────────────────── */
+    footer {
+      background: var(--bg2); border-top: 1px solid var(--border);
+      padding: 3rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-copy { font-size: 0.78rem; color: var(--muted); }
+    .footer-socials { display: flex; gap: 0.75rem; }
+    .social-btn {
+      width: 34px; height: 34px; background: var(--surface); border: 1px solid var(--border);
+      display: grid; place-items: center; cursor: pointer; font-size: 0.9rem;
+      transition: border-color 0.2s, color 0.2s; text-decoration: none; color: var(--muted);
+    }
+    .social-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-  .gallery-visual {
-    width: 100%; height: 100%;
-    min-height: 220px;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
-    position: relative;
-    overflow: hidden;
-  }
-  .gallery-item:nth-child(1) .gallery-visual { min-height: 460px; }
+    /* ── ANIMATIONS ────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
 
-  .gallery-item:hover .gallery-visual { transform: scale(1.05); }
+    /* reveal on scroll */
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
 
-  /* Each card gets a unique design */
-  .gv-1 { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
-  .gv-2 { background: linear-gradient(135deg, #2d1b00 0%, #5c3a00 100%); }
-  .gv-3 { background: linear-gradient(135deg, #0d2818 0%, #1a4a2e 100%); }
-  .gv-4 { background: linear-gradient(135deg, #1a0a1a 0%, #3d1a3d 100%); }
-  .gv-5 { background: linear-gradient(135deg, #1a1a00 0%, #3d3d00 100%); }
-  .gv-6 { background: linear-gradient(135deg, #1a0000 0%, #4d0000 100%); }
-  .gv-7 { background: linear-gradient(135deg, #00141a 0%, #003347 100%); }
-  .gv-8 { background: linear-gradient(135deg, #0d0d0d 0%, #2a2a2a 100%); }
+    /* ── RESPONSIVE ────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      section { padding: 4rem 1.5rem; }
+      .hero { padding: 7rem 1.5rem 4rem; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .gallery-item { grid-column: span 1 !important; grid-row: span 1 !important; }
+      .contact-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .form-row { grid-template-columns: 1fr; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
 
-  /* SVG mock designs inside gallery */
-  .mock-brochure {
-    width: 120px; height: 160px;
-    background: white;
-    border-radius: 4px;
-    box-shadow: 20px 20px 60px rgba(0,0,0,0.4);
-    position: relative; overflow: hidden;
-    transform: rotate(-3deg);
-  }
-  .mock-brochure::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 55px;
-    background: var(--accent);
-  }
-  .mock-brochure::after {
-    content: 'BROTHERS\nGRAPHICS';
-    white-space: pre;
-    position: absolute;
-    top: 8px; left: 10px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 11px;
-    color: var(--ink);
-    letter-spacing: 2px;
-    line-height: 1.3;
-  }
-
-  .mock-brochure-2 {
-    width: 150px; height: 200px;
-    background: white;
-    border-radius: 4px;
-    box-shadow: 20px 20px 60px rgba(0,0,0,0.5);
-    position: relative; overflow: hidden;
-    transform: rotate(2deg);
-  }
-  .mock-brochure-2::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(160deg, #1a1a2e 0%, #0f3460 60%, #e8c547 100%);
-  }
-  .mock-brochure-2::after {
-    content: 'ANNUAL\nREPORT\n2025';
-    white-space: pre;
-    position: absolute;
-    top: 20px; left: 15px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    color: white;
-    line-height: 1.2;
-    letter-spacing: 3px;
-  }
-
-  .mock-card {
-    width: 180px; height: 100px;
-    background: #111;
-    border-radius: 8px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    position: relative; overflow: hidden;
-    transform: rotate(-2deg);
-  }
-  .mock-card::before {
-    content: '';
-    position: absolute;
-    bottom: 0; right: -20px;
-    width: 100px; height: 100px;
-    background: var(--accent);
-    border-radius: 50%;
-    opacity: 0.3;
-  }
-  .mock-card::after {
-    content: 'BROTHERS\nGRAPHICS';
-    white-space: pre;
-    position: absolute;
-    top: 14px; left: 14px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 13px;
-    color: var(--accent);
-    letter-spacing: 3px;
-    line-height: 1.4;
-  }
-
-  .mock-logo-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    padding: 20px;
-  }
-  .logo-chip {
-    width: 80px; height: 80px;
-    border-radius: 12px;
-    display: grid; place-items: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.9rem;
-    letter-spacing: 2px;
-  }
-  .logo-chip.c1 { background: var(--accent); color: var(--ink); }
-  .logo-chip.c2 { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.15); }
-  .logo-chip.c3 { background: var(--accent2); color: white; }
-  .logo-chip.c4 { background: #e8c547; color: #0a0a0a; border: none; }
-
-  .mock-banner {
-    width: 90%; height: 90px;
-    background: linear-gradient(90deg, var(--accent) 0%, #ff9500 100%);
-    border-radius: 6px;
-    display: flex; align-items: center;
-    padding: 0 24px;
-    box-shadow: 0 10px 40px rgba(232,197,71,0.3);
-  }
-  .mock-banner-text {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.4rem;
-    color: var(--ink);
-    letter-spacing: 4px;
-  }
-
-  .mock-tshirt {
-    width: 110px; height: 130px;
-    position: relative;
-  }
-  .tshirt-shape {
-    width: 110px; height: 130px;
-    background: #1e1e1e;
-    border-radius: 0 0 10px 10px;
-    position: relative;
-    clip-path: polygon(15% 0%, 30% 0%, 30% 15%, 70% 15%, 70% 0%, 85% 0%, 100% 20%, 90% 25%, 90% 100%, 10% 100%, 10% 25%, 0% 20%);
-  }
-  .tshirt-logo {
-    position: absolute;
-    top: 45px; left: 50%;
-    transform: translateX(-50%);
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 14px;
-    color: var(--accent);
-    letter-spacing: 2px;
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  .mock-sticker {
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-  }
-  .sticker {
-    width: 80px; height: 80px;
-    border-radius: 12px;
-    display: grid; place-items: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    color: var(--ink);
-    text-align: center;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-  }
-  .sticker.s1 { background: var(--accent); transform: rotate(-8deg); }
-  .sticker.s2 { background: var(--accent2); transform: rotate(5deg); margin-top: -15px; }
-  .sticker.s3 { background: white; transform: rotate(-3deg); margin-top: -15px; }
-
-  .mock-flex-banner {
-    display: flex; flex-direction: column; gap: 12px; padding: 20px;
-  }
-  .flex-strip {
-    height: 40px; border-radius: 4px;
-    display: flex; align-items: center;
-    padding: 0 15px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.85rem;
-    letter-spacing: 3px;
-  }
-  .flex-strip.fs1 { background: var(--accent); color: var(--ink); width: 90%; }
-  .flex-strip.fs2 { background: rgba(255,255,255,0.05); color: var(--muted); width: 70%; border: 1px solid var(--border); }
-  .flex-strip.fs3 { background: var(--accent2); color: white; width: 80%; }
-
-  /* HOVER OVERLAY */
-  .gallery-overlay {
-    position: absolute; inset: 0;
-    background: rgba(10,10,10,0.85);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    opacity: 0;
-    transition: opacity 0.4s;
-    padding: 2rem;
-    text-align: center;
-    backdrop-filter: blur(4px);
-  }
-  .gallery-item:hover .gallery-overlay { opacity: 1; }
-  .overlay-category {
-    font-size: 0.6rem;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 0.8rem;
-  }
-  .overlay-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    font-style: italic;
-    color: white;
-    margin-bottom: 1rem;
-  }
-  .overlay-view {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--accent);
-    color: var(--ink);
-    padding: 8px 20px;
-    border-radius: 100px;
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-weight: 500;
-    transform: translateY(10px);
-    transition: transform 0.4s 0.1s;
-  }
-  .gallery-item:hover .overlay-view { transform: translateY(0); }
-
-  /* SERVICES */
-  .services-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    margin-top: 4rem;
-  }
-  .service-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 2.5rem;
-    transition: all 0.4s;
-    position: relative;
-    overflow: hidden;
-  }
-  .service-card::before {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--accent);
-    transform: scaleX(0);
-    transition: transform 0.4s;
-    transform-origin: left;
-  }
-  .service-card:hover::before { transform: scaleX(1); }
-  .service-card:hover { transform: translateY(-6px); border-color: rgba(232,197,71,0.2); }
-
-  .service-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 4rem;
-    color: rgba(232,197,71,0.1);
-    line-height: 1;
-    margin-bottom: 1rem;
-    transition: color 0.4s;
-  }
-  .service-card:hover .service-num { color: rgba(232,197,71,0.25); }
-  .service-icon { font-size: 2rem; margin-bottom: 1rem; }
-  .service-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.5rem;
-    letter-spacing: 2px;
-    margin-bottom: 0.8rem;
-  }
-  .service-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
-
-  /* PROCESS */
-  #process { background: var(--bg2); }
-  .process-steps {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
-    margin-top: 4rem;
-    position: relative;
-  }
-  .process-steps::before {
-    content: '';
-    position: absolute;
-    top: 2.5rem; left: 12%;
-    right: 12%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), var(--accent), transparent);
-    opacity: 0.3;
-  }
-  .process-step { text-align: center; position: relative; }
-  .step-circle {
-    width: 50px; height: 50px;
-    border: 2px solid var(--accent);
-    border-radius: 50%;
-    display: grid; place-items: center;
-    margin: 0 auto 1.5rem;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.2rem;
-    color: var(--accent);
-    background: var(--bg2);
-    transition: all 0.3s;
-  }
-  .process-step:hover .step-circle {
-    background: var(--accent);
-    color: var(--ink);
-    transform: scale(1.15);
-  }
-  .step-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.2rem;
-    letter-spacing: 2px;
-    margin-bottom: 0.6rem;
-  }
-  .step-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
-
-  /* TESTIMONIALS */
-  .testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    margin-top: 4rem;
-  }
-  .testimonial {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 2rem;
-    transition: all 0.3s;
-  }
-  .testimonial:hover {
-    border-color: rgba(232,197,71,0.2);
-    transform: translateY(-4px);
-  }
-  .stars { color: var(--accent); font-size: 0.9rem; margin-bottom: 1.2rem; letter-spacing: 3px; }
-  .testimonial-text {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 1rem;
-    line-height: 1.7;
-    color: var(--text);
-    margin-bottom: 1.5rem;
-  }
-  .testimonial-author {
-    display: flex; align-items: center; gap: 12px;
-  }
-  .author-avatar {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    display: grid; place-items: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem;
-    color: var(--ink);
-    font-weight: bold;
-  }
-  .author-name { font-size: 0.85rem; font-weight: 500; }
-  .author-role { font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; }
-
-  /* CONTACT */
-  #contact { background: var(--bg); }
-  .contact-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6rem;
-    margin-top: 4rem;
-    align-items: start;
-  }
-  .contact-info p {
-    color: var(--muted);
-    line-height: 1.8;
-    margin-bottom: 3rem;
-  }
-  .contact-details { display: flex; flex-direction: column; gap: 1.5rem; }
-  .contact-item {
-    display: flex; align-items: flex-start; gap: 1rem;
-    padding: 1.5rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    transition: all 0.3s;
-  }
-  .contact-item:hover { border-color: var(--accent); }
-  .contact-icon { font-size: 1.2rem; margin-top: 2px; }
-  .contact-label { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
-  .contact-val { font-size: 0.9rem; color: var(--text); }
-
-  .contact-form { display: flex; flex-direction: column; gap: 1.2rem; }
-  .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-group label { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
-  .form-group input,
-  .form-group textarea,
-  .form-group select {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 1rem 1.2rem;
-    border-radius: 6px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    transition: all 0.3s;
-    outline: none;
-    resize: none;
-  }
-  .form-group select option { background: var(--surface); }
-  .form-group input:focus,
-  .form-group textarea:focus,
-  .form-group select:focus { border-color: var(--accent); }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  .btn-submit {
-    background: var(--accent);
-    color: var(--ink);
-    border: none;
-    padding: 1.1rem 2.5rem;
-    border-radius: 6px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.85rem;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-weight: 500;
-    cursor: none;
-    transition: all 0.3s;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-  }
-  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(232,197,71,0.3); }
-
-  /* FOOTER */
-  footer {
-    background: var(--bg3);
-    border-top: 1px solid var(--border);
-    padding: 4rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .footer-left .footer-brand {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.5rem;
-    letter-spacing: 5px;
-    margin-bottom: 0.5rem;
-  }
-  .footer-left p { color: var(--muted); font-size: 0.8rem; }
-  .footer-links { display: flex; gap: 2rem; }
-  .footer-links a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 0.75rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    transition: color 0.3s;
-  }
-  .footer-links a:hover { color: var(--accent); }
-  .footer-copy {
-    font-size: 0.75rem;
-    color: var(--muted);
-  }
-  .footer-copy span { color: var(--accent); }
-
-  /* SCROLL ANIMATIONS */
-  .reveal {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
-  }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
-
-  /* Stagger children */
-  .reveal-stagger > * {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
-  }
-  .reveal-stagger.visible > *:nth-child(1) { opacity:1; transform:none; transition-delay: 0.05s; }
-  .reveal-stagger.visible > *:nth-child(2) { opacity:1; transform:none; transition-delay: 0.15s; }
-  .reveal-stagger.visible > *:nth-child(3) { opacity:1; transform:none; transition-delay: 0.25s; }
-  .reveal-stagger.visible > *:nth-child(4) { opacity:1; transform:none; transition-delay: 0.35s; }
-  .reveal-stagger.visible > *:nth-child(5) { opacity:1; transform:none; transition-delay: 0.45s; }
-  .reveal-stagger.visible > *:nth-child(6) { opacity:1; transform:none; transition-delay: 0.55s; }
-  .reveal-stagger.visible > *:nth-child(7) { opacity:1; transform:none; transition-delay: 0.65s; }
-  .reveal-stagger.visible > *:nth-child(8) { opacity:1; transform:none; transition-delay: 0.75s; }
-
-  @media (max-width: 1024px) {
-    nav { padding: 1.2rem 2rem; }
-    .nav-links { gap: 1.5rem; }
-    section { padding: 6rem 2rem; }
-    .hero { padding: 0 2rem; }
-    .hero-stats { right: 2rem; }
-    .scroll-indicator { left: 2rem; }
-    .about-grid { gap: 3rem; }
-    .gallery-item:nth-child(1) { grid-column: span 7; }
-    .gallery-item:nth-child(2) { grid-column: span 5; }
-    .gallery-item:nth-child(3) { grid-column: span 6; }
-    .gallery-item:nth-child(4) { grid-column: span 6; }
-    .gallery-item:nth-child(5) { grid-column: span 4; }
-    .gallery-item:nth-child(6) { grid-column: span 8; }
-    .gallery-item:nth-child(7) { grid-column: span 6; }
-    .gallery-item:nth-child(8) { grid-column: span 6; }
-    .services-grid { grid-template-columns: 1fr 1fr; }
-    .contact-grid { gap: 3rem; }
-    footer { flex-direction: column; gap: 2rem; text-align: center; }
-    .footer-links { flex-wrap: wrap; justify-content: center; }
-  }
-</style>
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: var(--border); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+  </style>
 </head>
 <body>
 
-<!-- CUSTOM CURSOR -->
-<div class="cursor" id="cursorDot"><div class="cursor-dot"></div></div>
-<div class="cursor" id="cursorRing"><div class="cursor-ring"></div></div>
-
-<!-- NAV -->
+<!-- ── NAV ──────────────────────────────────────── -->
 <nav>
   <a href="#" class="nav-logo">
-    <div class="logo-mark"></div>
+    <div class="logo-icon">BG</div>
     <div class="logo-text">
-      <span class="logo-name">Brothers Graphics</span>
-      <span class="logo-tagline">Design &amp; Print Studio</span>
+      <strong>Brothers Graphics</strong>
+      <span>Design &amp; Print Studio</span>
     </div>
   </a>
   <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#gallery">Gallery</a></li>
     <li><a href="#services">Services</a></li>
+    <li><a href="#gallery">Work</a></li>
     <li><a href="#process">Process</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
-  <button class="theme-toggle" id="themeToggle" title="Toggle theme">☀</button>
+  <button class="theme-toggle" onclick="toggleTheme()">
+    <span id="theme-icon">☀️</span> <span id="theme-label">Light</span>
+  </button>
 </nav>
 
-<!-- HERO -->
+<!-- ── HERO ─────────────────────────────────────── -->
 <section class="hero" id="home">
   <div class="hero-bg"></div>
-  <div class="hero-lines"></div>
-
+  <div class="hero-grid-lines"></div>
   <div class="hero-content">
-    <div class="hero-badge">✦ Madurai's Premier Print Studio</div>
-    <h1>
-      <span class="line-accent">BROTHERS</span><br>
-      <span class="line-outline">GRAPHICS</span><br>
-      <span>STUDIO</span>
+    <div class="hero-tag">Est. 2014 · Madurai, Tamil Nadu</div>
+    <h1 class="hero-title">
+      Brothers<br><em>Graphics</em>
     </h1>
-    <p class="hero-desc">We craft visual identities and premium print materials that make brands impossible to forget. From business cards to building-sized banners — precision in every pixel.</p>
+    <p class="hero-sub">
+      Where design meets craft. We create bold visual identities, large-format prints, 
+      and print collateral that leave a lasting mark — for brands that mean business.
+    </p>
     <div class="hero-cta">
-      <a href="#gallery" class="btn-primary">View Our Work</a>
-      <a href="#contact" class="btn-ghost">Get a Quote <span class="arrow">→</span></a>
+      <a href="#gallery" class="btn-primary">View Our Work →</a>
+      <a href="#contact" class="btn-outline">Get a Quote</a>
     </div>
-  </div>
-
-  <div class="hero-stats">
-    <div class="stat">
-      <div class="stat-num">850+</div>
-      <div class="stat-label">Projects Done</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">12</div>
-      <div class="stat-label">Years Active</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">300+</div>
-      <div class="stat-label">Happy Clients</div>
-    </div>
-  </div>
-
-  <div class="scroll-indicator">
-    <span class="scroll-line"></span>
-    Scroll to explore
-  </div>
-</section>
-
-<!-- TICKER -->
-<div class="ticker">
-  <div class="ticker-inner">
-    <span class="ticker-item">Business Cards <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Flex Banners <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Logo Design <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Brochures <span class="ticker-dot"></span></span>
-    <span class="ticker-item">T-Shirt Printing <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Sticker Printing <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Visiting Cards <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Wedding Invitations <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Packaging Design <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Digital Printing <span class="ticker-dot"></span></span>
-    <!-- Duplicate for seamless loop -->
-    <span class="ticker-item">Business Cards <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Flex Banners <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Logo Design <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Brochures <span class="ticker-dot"></span></span>
-    <span class="ticker-item">T-Shirt Printing <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Sticker Printing <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Visiting Cards <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Wedding Invitations <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Packaging Design <span class="ticker-dot"></span></span>
-    <span class="ticker-item">Digital Printing <span class="ticker-dot"></span></span>
-  </div>
-</div>
-
-<!-- ABOUT -->
-<section id="about">
-  <div class="about-grid">
-    <div class="about-visual reveal">
-      <div class="about-card about-card-main">
-        <div class="card-inner">
-          <div class="about-logo-large">BG</div>
-          <h3>Brothers Graphics</h3>
-          <p>Est. 2012 · Madurai</p>
-        </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">800+</div>
+        <div class="stat-label">Projects Completed</div>
       </div>
-      <div class="about-card about-card-accent">
-        <div class="big-num">12+</div>
-        <div class="small-text">Years of Excellence</div>
+      <div class="stat-item">
+        <div class="stat-num">10+</div>
+        <div class="stat-label">Years in Business</div>
       </div>
-      <div class="floating-tag">★ 4.9 Rating</div>
-    </div>
-
-    <div class="about-text">
-      <div class="section-label reveal">Our Story</div>
-      <h2 class="section-title reveal">Where Ink Meets <em style="font-family:'Playfair Display',serif; color:var(--accent)">Imagination</em></h2>
-      <p class="reveal">Brothers Graphics was founded by two brothers with a shared passion for design and a relentless obsession with print quality. From a small shop in Madurai to a full-service design-and-print studio, we've grown by delivering work that speaks louder than words.</p>
-      <p class="reveal">Every project is treated as a canvas. Whether you need a simple visiting card or a complex brand identity, we bring the same energy, care, and craftsmanship to every job.</p>
-
-      <div class="about-features reveal-stagger">
-        <div class="feature">
-          <div class="feature-icon">🎨</div>
-          <h4>Creative Design</h4>
-          <p>In-house designers who understand your brand.</p>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">🖨️</div>
-          <h4>Premium Print</h4>
-          <p>State-of-the-art printers for crisp results.</p>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">⚡</div>
-          <h4>Fast Turnaround</h4>
-          <p>Express orders delivered within 24 hours.</p>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">💎</div>
-          <h4>Quality Assured</h4>
-          <p>Every print inspected before delivery.</p>
-        </div>
+      <div class="stat-item">
+        <div class="stat-num">400+</div>
+        <div class="stat-label">Happy Clients</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- GALLERY -->
-<section id="gallery">
-  <div class="gallery-header">
-    <div>
-      <div class="section-label reveal">Our Work</div>
-      <h2 class="section-title reveal">Real Projects, <br>Real Impact</h2>
-    </div>
-    <div class="filter-tabs reveal">
-      <button class="filter-tab active" onclick="filterGallery(this,'all')">All</button>
-      <button class="filter-tab" onclick="filterGallery(this,'branding')">Branding</button>
-      <button class="filter-tab" onclick="filterGallery(this,'print')">Print</button>
-      <button class="filter-tab" onclick="filterGallery(this,'digital')">Digital</button>
-    </div>
+<!-- ── SERVICES ─────────────────────────────────── -->
+<section class="services" id="services">
+  <div class="section-header reveal">
+    <div class="section-label">What We Do</div>
+    <h2 class="section-title">Our Services</h2>
   </div>
-
-  <div class="gallery-grid reveal-stagger">
-    <div class="gallery-item" data-cat="branding">
-      <div class="gallery-visual gv-1">
-        <div class="mock-brochure-2"></div>
-        <div class="mock-brochure" style="position:absolute; right:15%; bottom:10%;"></div>
-      </div>
-      <div class="gallery-overlay">
-        <div class="overlay-category">Branding</div>
-        <div class="overlay-title">Kamaraj Textiles — Brand Identity</div>
-        <div class="overlay-view">View Project ↗</div>
-      </div>
-    </div>
-
-    <div class="gallery-item" data-cat="print">
-      <div class="gallery-visual gv-2">
-        <div class="mock-card"></div>
-      </div>
-      <div class="gallery-overlay">
-        <div class="overlay-category">Print</div>
-        <div class="overlay-title">Premium Business Cards</div>
-        <div class="overlay-view">View Project ↗</div>
-      </div>
-    </div>
-
-    <div class="gallery-item" data-cat="branding">
-      <div class="gallery-visual gv-3">
-        <div class="mock-logo-grid">
-          <div class="logo-chip c1">BG</div>
-          <div class="logo-chip c2">TM</div>
-          <div class="logo-chip c3">KR</div>
-          <div class="logo-chip c4">SL</div>
-        </div>
-      </div>
-      <div class="gallery-overlay">
-        <div class="overlay-category">Branding</div>
-        <div class="overlay-title">Logo Design Collection</div>
-        <div class="overlay-view">View Project ↗</div>
-      </div>
-    </div>
-
-    <div class="gallery-item" data-cat="digital">
-      <div class="gallery-visual gv-4">
-        <div class="mock-banner"><span class="mock-banner-text">GRAND OPENING — 40% OFF</span></div>
-      </div>
-      <div class="gallery-overlay">
-        <div class="overlay-category">Digital</div>
-        <div class="overlay-title">Digital Banner Designs</div>
-        <div class="overlay-view">View Project ↗</div>
-      </div>
-    </div>
-
-    <div class="gallery-item" data-cat="print">
-      <div class="gallery-visual gv-5">
-        <div class="mock-tshirt">
-          <div class="tshirt-shape"><div class="tshirt-logo">BROTHERS<br>GRAPHICS</div></div>
-        </div>
-      </div>
-      <div class="gallery-overlay">
-        <div class="overlay-category">Print</div>
-        <div class="overlay-title">Custom T-Shirt Printing</div>
-        <div class="overlay-view">View Project ↗</div>
-      </div>
-    </div>
-
-    <div class="gallery-item" data-cat="print">
-      <div class="gallery-visual gv-6">
-        <div class="mock-sticker">
-          <div class="sticker s1">SALE<br>50%</div>
-          <div class="sticker s2">NEW<br>LAUNCH</div>
-          <div class="sticker s3" style="color:#0a0a0a">LIMITED<br>EDITION</div>
-        </div>
-      </div>
-      <div class="gallery-overlay">
-        <div class="overlay-category">Print</div>
-        <div class="overlay-title">Sticker &amp; Label Designs</div>
-        <div class="overlay-view">View Project ↗</div>
-      </div>
-    </div>
-
-    <div class="gallery-item" data-cat="digital">
-      <div class="gallery-visual gv-7">
-        <div class="mock-flex-banner">
-          <div class="flex-strip fs1">MEGA SALE — THIS WEEKEND</div>
-          <div class="flex-strip fs2">Brothers Graphics · Est. 2012</div>
-          <div class="flex-strip fs3">ORDER NOW · 98400 00000</div>
-        </div>
-      </div>
-      <div class="gallery-overlay">
-        <div class="overlay-category">Print</div>
-        <div class="overlay-title">Flex &amp; Vinyl Banners</div>
-        <div class="overlay-view">View Project ↗</div>
-      </div>
-    </div>
-
-    <div class="gallery-item" data-cat="branding">
-      <div class="gallery-visual gv-8">
-        <div style="text-align:center; padding:20px;">
-          <div style="font-family:'Bebas Neue',sans-serif; font-size:2.5rem; letter-spacing:6px; color:var(--accent); line-height:1;">MEENAKSHI<br><span style="color:white; font-size:1.4rem; letter-spacing:4px">SWEETS</span></div>
-          <div style="width:60px; height:2px; background:var(--accent); margin:12px auto;"></div>
-          <div style="font-size:0.65rem; letter-spacing:5px; color:var(--muted); text-transform:uppercase">Est. 1995 · Madurai</div>
-        </div>
-      </div>
-      <div class="gallery-overlay">
-        <div class="overlay-category">Branding</div>
-        <div class="overlay-title">Meenakshi Sweets Rebrand</div>
-        <div class="overlay-view">View Project ↗</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- SERVICES -->
-<section id="services">
-  <div class="section-label reveal">What We Do</div>
-  <h2 class="section-title reveal">Full-Service <br>Design &amp; Print</h2>
-
-  <div class="services-grid reveal-stagger">
-    <div class="service-card">
-      <div class="service-num">01</div>
+  <div class="services-grid">
+    <div class="service-card reveal">
       <div class="service-icon">🎨</div>
-      <div class="service-title">Brand Identity</div>
-      <p class="service-desc">Logo design, color palettes, typography systems, and brand guidelines that define who you are and how you're remembered.</p>
+      <div class="service-name">Brand Identity</div>
+      <p class="service-desc">Logo design, brand guidelines, and visual language systems that tell your story with authority.</p>
     </div>
-    <div class="service-card">
-      <div class="service-num">02</div>
+    <div class="service-card reveal reveal-delay-1">
       <div class="service-icon">🖨️</div>
-      <div class="service-title">Offset Printing</div>
-      <p class="service-desc">High-volume, vibrant offset printing for brochures, catalogs, and magazines with unmatched color consistency.</p>
+      <div class="service-name">Offset Printing</div>
+      <p class="service-desc">Premium offset printing for brochures, catalogues, and packaging — vibrant color, sharp detail.</p>
     </div>
-    <div class="service-card">
-      <div class="service-num">03</div>
-      <div class="service-icon">📋</div>
-      <div class="service-title">Flex & Banner</div>
-      <p class="service-desc">Large-format printing for hoardings, flex boards, vinyl banners, and event displays that command attention.</p>
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-icon">📐</div>
+      <div class="service-name">Flex & Banner</div>
+      <p class="service-desc">Large-format flex printing, hoardings, and banners that command attention from distance.</p>
     </div>
-    <div class="service-card">
-      <div class="service-num">04</div>
+    <div class="service-card reveal reveal-delay-3">
       <div class="service-icon">👕</div>
-      <div class="service-title">Garment Printing</div>
-      <p class="service-desc">Custom screen-printing and digital printing on T-shirts, uniforms, caps, and corporate merchandise.</p>
+      <div class="service-name">Apparel Printing</div>
+      <p class="service-desc">T-shirt and uniform printing with screen print, sublimation, and digital DTF technology.</p>
     </div>
-    <div class="service-card">
-      <div class="service-num">05</div>
+    <div class="service-card reveal">
       <div class="service-icon">📦</div>
-      <div class="service-title">Packaging Design</div>
-      <p class="service-desc">Product boxes, labels, stickers, and packaging that makes your product stand out on any shelf.</p>
+      <div class="service-name">Packaging Design</div>
+      <p class="service-desc">Box, label, and packaging design that converts shoppers into buyers at the point of sale.</p>
     </div>
-    <div class="service-card">
-      <div class="service-num">06</div>
-      <div class="service-icon">💌</div>
-      <div class="service-title">Wedding & Events</div>
-      <p class="service-desc">Luxury invitations, menus, programs, and event stationery crafted with elegance and precision.</p>
-    </div>
-  </div>
-</section>
-
-<!-- PROCESS -->
-<section id="process">
-  <div class="section-label reveal">How We Work</div>
-  <h2 class="section-title reveal">Four Steps to<br><em style="font-family:'Playfair Display',serif; color:var(--accent)">Perfect Print</em></h2>
-
-  <div class="process-steps reveal-stagger">
-    <div class="process-step">
-      <div class="step-circle">01</div>
-      <div class="step-title">Consultation</div>
-      <p class="step-desc">We understand your brand, goals, and vision in a free discovery call or walkthrough.</p>
-    </div>
-    <div class="process-step">
-      <div class="step-circle">02</div>
-      <div class="step-title">Design</div>
-      <p class="step-desc">Our designers craft multiple concepts for your review with unlimited revisions.</p>
-    </div>
-    <div class="process-step">
-      <div class="step-circle">03</div>
-      <div class="step-title">Print</div>
-      <p class="step-desc">Approved files go to production with rigorous quality checks at every stage.</p>
-    </div>
-    <div class="process-step">
-      <div class="step-circle">04</div>
-      <div class="step-title">Deliver</div>
-      <p class="step-desc">Packaged safely and delivered to your door — or collected from our studio.</p>
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-icon">🪧</div>
+      <div class="service-name">Signage & Display</div>
+      <p class="service-desc">Acrylic boards, LED signage, standees, and exhibition displays for every environment.</p>
     </div>
   </div>
 </section>
 
-<!-- TESTIMONIALS -->
+<!-- ── GALLERY ───────────────────────────────────── -->
+<section id="gallery">
+  <div class="section-header reveal">
+    <div class="section-label">Portfolio</div>
+    <h2 class="section-title">Real Projects</h2>
+  </div>
+  <div class="gallery-grid">
+
+    <!-- 1 – Logo Design (tall) -->
+    <div class="gallery-item">
+      <div class="gallery-mock p1">
+        <div class="proj-shape">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="100,10 190,55 190,145 100,190 10,145 10,55" stroke="white" stroke-width="2" fill="none"/>
+            <polygon points="100,35 165,65 165,135 100,165 35,135 35,65" stroke="white" stroke-width="1" fill="none" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="proj-logo-1">ZETA<br>MOTORS</div>
+      </div>
+      <div class="corner-tag">Logo Design</div>
+      <div class="gallery-overlay">
+        <div class="gallery-tag">Branding</div>
+        <div class="gallery-name">Zeta Motors Identity</div>
+        <div class="gallery-desc">Full brand identity system including logo, business cards, and vehicle decals for automotive dealership.</div>
+        <a href="#" class="gallery-link">View Case ›</a>
+      </div>
+    </div>
+
+    <!-- 2 – Event Flyer -->
+    <div class="gallery-item">
+      <div class="gallery-mock p2">
+        <div class="proj-shape">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="80" stroke="white" stroke-width="2"/>
+            <circle cx="100" cy="100" r="50" stroke="white" stroke-width="1" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="proj-flyer">
+          <div class="f-title">TECH SUMMIT<br>2025</div>
+          <div class="f-sub">Madurai Convention Centre</div>
+          <div class="f-accent">▶ REGISTER NOW</div>
+        </div>
+      </div>
+      <div class="corner-tag">Event Flyer</div>
+      <div class="gallery-overlay">
+        <div class="gallery-tag">Print Design</div>
+        <div class="gallery-name">Tech Summit 2025</div>
+        <div class="gallery-desc">Event promotional flyer and digital assets for 1,200-delegate technology conference.</div>
+        <a href="#" class="gallery-link">View Case ›</a>
+      </div>
+    </div>
+
+    <!-- 3 – Business Cards -->
+    <div class="gallery-item">
+      <div class="gallery-mock p3">
+        <div class="proj-shape">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="60" width="160" height="80" rx="4" stroke="white" stroke-width="2"/>
+            <rect x="30" y="70" width="60" height="60" rx="2" stroke="white" stroke-width="1" opacity="0.4"/>
+          </svg>
+        </div>
+        <div class="proj-business-card">
+          <div class="pbc-logo">AUREX</div>
+          <div class="pbc-name">Priya Rajan</div>
+          <div class="pbc-info">Founder & CEO<br>+91 98400 12345<br>priya@aurex.in</div>
+        </div>
+      </div>
+      <div class="corner-tag">Stationery</div>
+      <div class="gallery-overlay">
+        <div class="gallery-tag">Print</div>
+        <div class="gallery-name">Aurex Business Cards</div>
+        <div class="gallery-desc">Spot-UV premium visiting cards with foil embossing for fintech startup's leadership team.</div>
+        <a href="#" class="gallery-link">View Case ›</a>
+      </div>
+    </div>
+
+    <!-- 4 – Banner / Hoarding -->
+    <div class="gallery-item">
+      <div class="gallery-mock p4">
+        <div class="proj-shape">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="15" y="70" width="170" height="60" stroke="white" stroke-width="2"/>
+            <line x1="15" y1="70" x2="185" y2="130" stroke="white" stroke-width="1" opacity="0.3"/>
+          </svg>
+        </div>
+        <div class="proj-banner">
+          <div class="pb-title">GRAND<br>OPENING</div>
+          <div class="pb-sub">Kavitha Silks · Anna Nagar</div>
+        </div>
+      </div>
+      <div class="corner-tag">Flex Printing</div>
+      <div class="gallery-overlay">
+        <div class="gallery-tag">Large Format</div>
+        <div class="gallery-name">Kavitha Silks Opening</div>
+        <div class="gallery-desc">20×8 ft grand opening flex banner with metallic lamination for saree boutique launch.</div>
+        <a href="#" class="gallery-link">View Case ›</a>
+      </div>
+    </div>
+
+    <!-- 5 – T-Shirt Design -->
+    <div class="gallery-item">
+      <div class="gallery-mock p5">
+        <div class="proj-shape">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M60,40 L40,70 L70,75 L70,160 L130,160 L130,75 L160,70 L140,40 L115,55 C115,55 110,65 100,65 C90,65 85,55 85,55 Z" stroke="white" stroke-width="2" fill="none"/>
+          </svg>
+        </div>
+        <div class="proj-tshirt">
+          <div class="pt-label">TEAM<br>FALCON</div>
+          <div class="pt-sub">Corporate Uniform 2025</div>
+        </div>
+      </div>
+      <div class="corner-tag">Apparel</div>
+      <div class="gallery-overlay">
+        <div class="gallery-tag">T-Shirt Printing</div>
+        <div class="gallery-name">Team Falcon Uniforms</div>
+        <div class="gallery-desc">500-piece screen-printed uniforms for corporate sports day event with custom artwork.</div>
+        <a href="#" class="gallery-link">View Case ›</a>
+      </div>
+    </div>
+
+    <!-- 6 – Restaurant Menu (tall) -->
+    <div class="gallery-item">
+      <div class="gallery-mock p6">
+        <div class="proj-shape">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="55" y="20" width="90" height="160" rx="6" stroke="white" stroke-width="2"/>
+            <line x1="70" y1="50" x2="130" y2="50" stroke="white" stroke-width="1" opacity="0.5"/>
+            <line x1="70" y1="65" x2="120" y2="65" stroke="white" stroke-width="0.5" opacity="0.3"/>
+            <line x1="70" y1="80" x2="125" y2="80" stroke="white" stroke-width="0.5" opacity="0.3"/>
+          </svg>
+        </div>
+        <div class="proj-menu">
+          <div class="pm-head">SPICE ROUTE</div>
+          <div class="pm-item"><span>Biryani</span><span>₹220</span></div>
+          <div class="pm-item"><span>Tandoori</span><span>₹350</span></div>
+          <div class="pm-item"><span>Dosa</span><span>₹120</span></div>
+          <div class="pm-item"><span>Lassi</span><span>₹80</span></div>
+          <div class="pm-item"><span>Payasam</span><span>₹65</span></div>
+        </div>
+      </div>
+      <div class="corner-tag">Menu Design</div>
+      <div class="gallery-overlay">
+        <div class="gallery-tag">Print + Design</div>
+        <div class="gallery-name">Spice Route Menu</div>
+        <div class="gallery-desc">Multi-page A4 laminated menu design and print for 3-branch South Indian restaurant chain.</div>
+        <a href="#" class="gallery-link">View Case ›</a>
+      </div>
+    </div>
+
+    <!-- 7 – Product Catalogue -->
+    <div class="gallery-item">
+      <div class="gallery-mock p7">
+        <div class="proj-shape">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="30" y="30" width="140" height="140" rx="2" stroke="white" stroke-width="2"/>
+            <rect x="30" y="30" width="65" height="65" fill="white" opacity="0.06"/>
+            <rect x="105" y="30" width="65" height="65" fill="white" opacity="0.03"/>
+          </svg>
+        </div>
+        <div class="proj-catalog">
+          <div class="pc-grid">
+            <div class="pc-dot"></div><div class="pc-dot"></div><div class="pc-dot"></div>
+            <div class="pc-dot"></div><div class="pc-dot"></div><div class="pc-dot"></div>
+          </div>
+          <div class="pc-title">PRODUCT<br>CATALOGUE</div>
+        </div>
+      </div>
+      <div class="corner-tag">Catalogue</div>
+      <div class="gallery-overlay">
+        <div class="gallery-tag">Offset Print</div>
+        <div class="gallery-name">Steelcraft Catalogue</div>
+        <div class="gallery-desc">48-page A4 product catalogue with saddle-stitched binding for industrial hardware manufacturer.</div>
+        <a href="#" class="gallery-link">View Case ›</a>
+      </div>
+    </div>
+
+    <!-- 8 – Sticker / Label -->
+    <div class="gallery-item">
+      <div class="gallery-mock p8">
+        <div class="proj-shape">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="75" stroke="white" stroke-width="1.5" stroke-dasharray="6 4"/>
+          </svg>
+        </div>
+        <div class="proj-sticker">
+          <div class="ps-circle">
+            <div class="ps-text">MADE IN<br>MADURAI</div>
+          </div>
+          <div class="ps-sub">Die-cut vinyl sticker</div>
+        </div>
+      </div>
+      <div class="corner-tag">Stickers</div>
+      <div class="gallery-overlay">
+        <div class="gallery-tag">Label Print</div>
+        <div class="gallery-name">Die-Cut Vinyl Labels</div>
+        <div class="gallery-desc">Custom die-cut waterproof vinyl stickers and product labels for local FMCG brand packaging.</div>
+        <a href="#" class="gallery-link">View Case ›</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── PROCESS ───────────────────────────────────── -->
+<section class="process" id="process">
+  <div class="section-header reveal">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-title">Our Process</h2>
+  </div>
+  <div class="process-steps">
+    <div class="process-step reveal">
+      <div class="step-num">01</div>
+      <div class="step-title">Brief & Discovery</div>
+      <p class="step-desc">We learn about your brand, goals, audience, and timeline to define the right direction.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-1">
+      <div class="step-num">02</div>
+      <div class="step-title">Design Concepts</div>
+      <p class="step-desc">Our designers produce 2–3 distinct concepts for your review, each with rationale.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-2">
+      <div class="step-num">03</div>
+      <div class="step-title">Revise & Refine</div>
+      <p class="step-desc">We iterate based on your feedback until every detail is exactly as you envisioned.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-3">
+      <div class="step-num">04</div>
+      <div class="step-title">Print & Deliver</div>
+      <p class="step-desc">Production with quality checks at every stage. On-time delivery, every time.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ───────────────────────────────── -->
 <section id="testimonials">
-  <div class="section-label reveal">Client Love</div>
-  <h2 class="section-title reveal">What Our Clients Say</h2>
-
-  <div class="testimonials-grid reveal-stagger">
-    <div class="testimonial">
-      <div class="stars">★★★★★</div>
-      <p class="testimonial-text">"Brothers Graphics transformed our entire brand. The quality of their print work is something you have to see to believe. Every card, every banner — flawless."</p>
+  <div class="section-header reveal">
+    <div class="section-label">Client Stories</div>
+    <h2 class="section-title">What They Say</h2>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal">
+      <span class="quote-mark">"</span>
+      <p class="testimonial-text">Brothers Graphics transformed our entire brand from a rough idea into a polished identity. The attention to detail in our flex banners was incredible — colors popped even from 50 metres away.</p>
       <div class="testimonial-author">
-        <div class="author-avatar" style="background:var(--accent)">RK</div>
+        <div class="author-avatar">SR</div>
         <div>
-          <div class="author-name">Rajesh Kumar</div>
-          <div class="author-role">Owner · Kumaran Textiles</div>
+          <div class="author-name">Suresh Raghunathan</div>
+          <div class="author-role">Owner, Kavitha Silks</div>
         </div>
       </div>
     </div>
-    <div class="testimonial">
-      <div class="stars">★★★★★</div>
-      <p class="testimonial-text">"Turnaround time is incredible. I needed 500 brochures in 24 hours for an event — they delivered by 7 AM. The design was stunning too."</p>
+    <div class="testimonial-card reveal reveal-delay-1">
+      <span class="quote-mark">"</span>
+      <p class="testimonial-text">Ordered 500 uniforms with just 4 days lead time. They delivered on day 3 with zero errors. The screen print quality held through 30 washes — our team still wears them with pride.</p>
       <div class="testimonial-author">
-        <div class="author-avatar" style="background:var(--accent2)">PM</div>
+        <div class="author-avatar">AK</div>
         <div>
-          <div class="author-name">Priya Mahesh</div>
-          <div class="author-role">Director · PM Events</div>
+          <div class="author-name">Arun Kumar</div>
+          <div class="author-role">HR Manager, Falcon Technologies</div>
         </div>
       </div>
     </div>
-    <div class="testimonial">
-      <div class="stars">★★★★★</div>
-      <p class="testimonial-text">"Our wedding invitations were pure art. Every guest complimented them. Brothers Graphics understood our vision instantly and delivered beyond expectations."</p>
+    <div class="testimonial-card reveal reveal-delay-2">
+      <span class="quote-mark">"</span>
+      <p class="testimonial-text">The menu they designed doubled as a conversation starter. Customers regularly compliment it. Affordable, fast, and genuinely creative — Brothers Graphics is our go-to for all print work.</p>
       <div class="testimonial-author">
-        <div class="author-avatar" style="background:#8b5cf6">AS</div>
+        <div class="author-avatar">MV</div>
         <div>
-          <div class="author-name">Arun & Savitha</div>
-          <div class="author-role">Wedding Client · 2024</div>
+          <div class="author-name">Meena Venkatesan</div>
+          <div class="author-role">Founder, Spice Route Restaurant</div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CONTACT -->
-<section id="contact">
-  <div class="section-label reveal">Let's Work Together</div>
-  <h2 class="section-title reveal">Start Your<br>Next Project</h2>
-
-  <div class="contact-grid">
+<!-- ── CONTACT ───────────────────────────────────── -->
+<section class="contact" id="contact">
+  <div class="section-header reveal">
+    <div class="section-label">Get In Touch</div>
+    <h2 class="section-title">Start a Project</h2>
+  </div>
+  <div class="contact-inner">
     <div class="contact-info reveal">
-      <p>Ready to make your brand look unforgettable? Drop us a message or walk into our studio. We love talking about design.</p>
-      <div class="contact-details">
-        <div class="contact-item">
-          <div class="contact-icon">📍</div>
-          <div>
-            <div class="contact-label">Studio Address</div>
-            <div class="contact-val">45 Anna Nagar Main Road, Madurai — 625 020, Tamil Nadu</div>
-          </div>
+      <p>Have a project in mind? We'd love to hear about it. Tell us what you need and we'll get back to you within 2 business hours with a free quote.</p>
+      <div class="contact-detail">
+        <div class="contact-icon">📍</div>
+        <div class="contact-detail-text">
+          <div class="contact-detail-label">Visit Us</div>
+          47/B, Anna Nagar, Madurai – 625 020, Tamil Nadu
         </div>
-        <div class="contact-item">
-          <div class="contact-icon">📞</div>
-          <div>
-            <div class="contact-label">Phone / WhatsApp</div>
-            <div class="contact-val">+91 98400 00000</div>
-          </div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-icon">📞</div>
+        <div class="contact-detail-text">
+          <div class="contact-detail-label">Call / WhatsApp</div>
+          +91 94433 56789 · +91 98400 12345
         </div>
-        <div class="contact-item">
-          <div class="contact-icon">✉️</div>
-          <div>
-            <div class="contact-label">Email</div>
-            <div class="contact-val">hello@brothersgraphics.in</div>
-          </div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-icon">✉️</div>
+        <div class="contact-detail-text">
+          <div class="contact-detail-label">Email</div>
+          hello@brothersgraphics.in
         </div>
-        <div class="contact-item">
-          <div class="contact-icon">🕐</div>
-          <div>
-            <div class="contact-label">Working Hours</div>
-            <div class="contact-val">Mon–Sat: 9 AM – 8 PM &nbsp;·&nbsp; Sun: 10 AM – 4 PM</div>
-          </div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-icon">🕐</div>
+        <div class="contact-detail-text">
+          <div class="contact-detail-label">Working Hours</div>
+          Mon–Sat: 9:00 AM – 7:00 PM
         </div>
       </div>
     </div>
 
-    <div class="contact-form reveal">
+    <form class="contact-form reveal reveal-delay-1" onsubmit="handleSubmit(event)">
       <div class="form-row">
         <div class="form-group">
-          <label>Your Name</label>
-          <input type="text" placeholder="Rajesh Kumar">
+          <label class="form-label">Your Name</label>
+          <input type="text" class="form-input" placeholder="Ravi Kumar" required/>
         </div>
         <div class="form-group">
-          <label>Phone Number</label>
-          <input type="tel" placeholder="+91 98400 00000">
+          <label class="form-label">Phone / Email</label>
+          <input type="text" class="form-input" placeholder="+91 98000 00000"/>
         </div>
       </div>
       <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" placeholder="you@example.com">
-      </div>
-      <div class="form-group">
-        <label>Service Required</label>
-        <select>
-          <option value="">Select a service...</option>
-          <option>Brand Identity / Logo Design</option>
-          <option>Business Cards / Visiting Cards</option>
-          <option>Flex Banner / Hoarding</option>
-          <option>Brochure / Catalogue</option>
-          <option>T-Shirt / Garment Printing</option>
-          <option>Wedding Invitations</option>
+        <label class="form-label">Service Required</label>
+        <select class="form-select">
+          <option value="">Select a service…</option>
+          <option>Logo & Brand Identity</option>
+          <option>Offset Printing</option>
+          <option>Flex & Banner</option>
+          <option>Apparel Printing</option>
           <option>Packaging Design</option>
+          <option>Signage & Display</option>
           <option>Other</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Tell Us About Your Project</label>
-        <textarea rows="4" placeholder="Describe your project, quantity, deadline, or any specific requirements..."></textarea>
+        <label class="form-label">Project Details</label>
+        <textarea class="form-textarea" placeholder="Describe your project — quantity, size, deadline, any references…"></textarea>
       </div>
-      <button class="btn-submit" onclick="handleSubmit(this)">
-        <span>Send Message</span> <span>→</span>
+      <button type="submit" class="btn-primary" style="align-self:flex-start; clip-path:none; border-radius:0;">
+        Send Enquiry →
       </button>
-    </div>
+      <div id="form-success" style="display:none; color:var(--accent); font-size:0.85rem; margin-top:0.5rem;">
+        ✓ Message sent! We'll reply within 2 hours.
+      </div>
+    </form>
   </div>
 </section>
 
-<!-- FOOTER -->
+<!-- ── FOOTER ────────────────────────────────────── -->
 <footer>
-  <div class="footer-left">
-    <div class="footer-brand">Brothers Graphics</div>
-    <p>Madurai's Trusted Design &amp; Print Partner since 2012.</p>
+  <div>
+    <div class="logo-text" style="margin-bottom:0.3rem">
+      <strong>Brothers Graphics</strong>
+      <span>Design &amp; Print Studio · Madurai</span>
+    </div>
+    <div class="footer-copy">© 2025 Brothers Graphics. All rights reserved.</div>
   </div>
-  <div class="footer-links">
-    <a href="#home">Home</a>
-    <a href="#about">About</a>
-    <a href="#gallery">Gallery</a>
-    <a href="#services">Services</a>
-    <a href="#contact">Contact</a>
-  </div>
-  <div class="footer-copy">
-    © 2025 <span>Brothers Graphics</span>. All rights reserved.
+  <div class="footer-socials">
+    <a href="#" class="social-btn" title="Instagram">IG</a>
+    <a href="#" class="social-btn" title="Facebook">FB</a>
+    <a href="#" class="social-btn" title="WhatsApp">WA</a>
+    <a href="#" class="social-btn" title="LinkedIn">IN</a>
   </div>
 </footer>
 
 <script>
-  // CURSOR
-  const dot = document.querySelector('#cursorDot .cursor-dot');
-  const ring = document.querySelector('#cursorRing .cursor-ring');
-  let mx = 0, my = 0, rx = 0, ry = 0;
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-  function animateCursor() {
-    dot.parentElement.style.transform = `translate(${mx}px,${my}px)`;
-    rx += (mx - rx) * 0.12;
-    ry += (my - ry) * 0.12;
-    ring.parentElement.style.transform = `translate(${rx}px,${ry}px)`;
-    requestAnimationFrame(animateCursor);
-  }
-  animateCursor();
-
-  // THEME TOGGLE
-  const toggle = document.getElementById('themeToggle');
-  toggle.addEventListener('click', () => {
+  /* Theme Toggle */
+  function toggleTheme() {
     const html = document.documentElement;
     const isDark = html.getAttribute('data-theme') === 'dark';
     html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    toggle.textContent = isDark ? '☽' : '☀';
-  });
-
-  // SCROLL REVEAL
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        observer.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => observer.observe(el));
-
-  // GALLERY FILTER
-  function filterGallery(btn, cat) {
-    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.gallery-item').forEach(item => {
-      const show = cat === 'all' || item.dataset.cat === cat;
-      item.style.opacity = show ? '1' : '0.2';
-      item.style.transform = show ? '' : 'scale(0.95)';
-      item.style.transition = 'opacity 0.4s, transform 0.4s';
-      item.style.pointerEvents = show ? '' : 'none';
-    });
+    document.getElementById('theme-icon').textContent = isDark ? '🌙' : '☀️';
+    document.getElementById('theme-label').textContent = isDark ? 'Dark' : 'Light';
   }
 
-  // FORM SUBMIT
-  function handleSubmit(btn) {
-    const span = btn.querySelector('span');
-    span.textContent = 'Sending...';
-    btn.style.opacity = '0.8';
-    setTimeout(() => {
-      span.textContent = '✓ Message Sent!';
-      btn.style.background = '#22c55e';
-      setTimeout(() => {
-        span.textContent = 'Send Message';
-        btn.style.background = '';
-        btn.style.opacity = '';
-      }, 3000);
-    }, 1500);
+  /* Scroll Reveal */
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+
+  /* Form Submit */
+  function handleSubmit(e) {
+    e.preventDefault();
+    document.getElementById('form-success').style.display = 'block';
+    e.target.reset();
   }
 
-  // PARALLAX HERO
-  document.addEventListener('scroll', () => {
-    const y = window.scrollY;
-    const heroBg = document.querySelector('.hero-bg');
-    if (heroBg) heroBg.style.transform = `translateY(${y * 0.3}px)`;
+  /* Nav active highlight */
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#'+current ? 'var(--accent)' : '';
+    });
   });
 </script>
 </body>
